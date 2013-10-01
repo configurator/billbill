@@ -1,3 +1,3 @@
 define(function (require) {
-    console.log('Main loaded.')
+    console.log('Main loaded.');
 });
