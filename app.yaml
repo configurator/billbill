@@ -1,0 +1,18 @@
+application: caminito-billbill
+version: dev
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+- url: /
+  static_files: index.html
+  upload: index.html
+
+- url: /(.*\.(html|css|js|png|gif|jpg|svg|eot|ttf|woff))
+  static_files: \1
+  upload: .*\.(html|css|js|png|gif|jpg|svg|eot|ttf|woff)
