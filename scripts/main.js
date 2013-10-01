@@ -1,3 +1,11 @@
 define(function (require) {
-    console.log('Main loaded.');
+    require.config({
+        paths: {
+            'google-drive-client': 'https://apis.google.com/js/client.js'
+        }
+    });
+    
+    require(['drive'], function () {
+        console.log('Everything loaded.');
+    });
 });
