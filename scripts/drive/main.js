@@ -1,3 +1,3 @@
-define(['auth', 'google-drive-client'], function (auth) {
+define(['./auth', 'google-drive-client'], function (auth) {
     auth.authorize();
 });
