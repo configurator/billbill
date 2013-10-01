@@ -12,7 +12,11 @@ handlers:
 - url: /
   static_files: index.html
   upload: index.html
+  login: required
+  secure: always
 
 - url: /(.*\.(html|css|js|png|gif|jpg|svg|eot|ttf|woff))
   static_files: \1
   upload: .*\.(html|css|js|png|gif|jpg|svg|eot|ttf|woff)
+  login: required
+  secure: always
