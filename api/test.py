@@ -8,6 +8,6 @@ class TestPage(webapp2.RequestHandler):
         self.response.write('Test successful')
 
 
-application = webapp2.WSGIApplication([
+app = webapp2.WSGIApplication([
     ('/api/test', TestPage),
 ], debug=True)

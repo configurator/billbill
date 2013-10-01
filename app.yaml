@@ -24,5 +24,5 @@ handlers:
   login: required
 
 - url: /api/test
-  script: api/test.app
+  script: api.test.app
   login: required
