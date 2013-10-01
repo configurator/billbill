@@ -3,9 +3,20 @@
     <head>
         <title>Billbill</title>
         <link rel="stylesheet" href="styles/main.css" />
-        <script data-main="scripts/main" src="scripts/require.js"></script>
+        <script src="scripts/require.js"></script>
     </head>
     <body class="loading">
         Placeholder.
+
+        <script>
+                require.config({
+                    baseUrl: 'scripts',
+                    paths: {
+                        'google-drive-client': 'https://apis.google.com/js/client.js'
+                    }
+                });
+                
+                require.load('main');
+        </script>
     </body>
 </html>
