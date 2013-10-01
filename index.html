@@ -16,7 +16,9 @@
                     }
                 });
                 
-                require.load('main');
+                require(['main'], function () {
+                    console.log('All scripts loaded.');
+                });
         </script>
     </body>
 </html>
