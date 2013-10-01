@@ -23,5 +23,6 @@ handlers:
   upload: .*\.(html|css|js|png|gif|jpg|svg|eot|ttf|woff)
   login: required
 
-includes:
-- api
+- url: /api/test
+  script: api/test.py
+  login: required

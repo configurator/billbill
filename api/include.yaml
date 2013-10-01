@@ -1,5 +1,0 @@
-handlers:
-- url: /api/test
-  script: test.py
-  login: required
-
