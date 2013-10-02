@@ -5,6 +5,8 @@
         <link rel="stylesheet" href="styles/main.css" />
     </head>
     <body class="loading">
+        <div id="log"></div>
+        
         Placeholder.
         
         <div class="no-google-drive-auth google-drive-auth">
@@ -39,6 +41,10 @@
                     jquery: '//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min',
                     jqueryui: '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min'
                 }
+            });
+            
+            require(['console'], function () {
+                console.log('Console overriden.');
             });
             
             var googleDriveAPILoaded = function () {
