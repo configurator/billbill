@@ -1,4 +1,4 @@
-define(['./client_secrets', 'google-drive-client'], function (secrets) {
+define(['./client_secrets'], function (secrets) {
     var client_id = secrets.web.client_id,
         scopes = [
             'https://www.googleapis.com/auth/drive'

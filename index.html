@@ -3,22 +3,24 @@
     <head>
         <title>Billbill</title>
         <link rel="stylesheet" href="styles/main.css" />
-        <script src="scripts/require.js"></script>
     </head>
     <body class="loading">
         Placeholder.
 
+        <script src="scripts/require.js"></script>
         <script>
-                require.config({
-                    baseUrl: 'scripts',
-                    paths: {
-                        'google-drive-client': 'https://apis.google.com/js/client.js'
-                    }
-                });
+            require.config({
+                baseUrl: 'scripts'
+            });
+            
+            var googleDriveAPILoaded = function () {
+                console.log('Drive API loaded. Loading the rest of the scripts.');
                 
                 require(['main'], function () {
                     console.log('All scripts loaded.');
                 });
+            };
         </script>
+        <script src="https://apis.google.com/js/client.js?onload=googleDriveAPILoaded"></script>
     </body>
 </html>
