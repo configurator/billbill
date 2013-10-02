@@ -13,7 +13,7 @@ define(['jquery'], function ($) {
     for (var name in colors) {
         console[name] = (function (original, color) {
             return function () {
-                func.apply(console, arguments);
+                original.apply(console, arguments);
     
                 var line = $('<div>');
                 log.append(line);
