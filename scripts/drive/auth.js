@@ -20,6 +20,7 @@ define(['./client_secrets', 'ui/ui'], function (secrets, ui) {
                         ui.googleDriveAuthorizationSuccess();
                     } else if (immediate) {
                         console.log('Retrying authorization without immediacy');
+                        attemptAuthorization(false);
                     } else {
                         console.error("Couldn't authorize with the Google Drive API.");
                         ui.googleDriveAuthorizationFailed();
