@@ -1,3 +1,7 @@
 body {
     direction: rtl;
 }
+
+.no-close .ui-dialog-titlebar-close {
+  display: none;
+}

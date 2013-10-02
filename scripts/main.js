@@ -1,3 +1,3 @@
-define(['require', 'drive/main'], function (require, drive) {
+define(['require', 'drive/drive'], function (require, drive) {
     console.log('Everything loaded.');
 });
