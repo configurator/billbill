@@ -11,20 +11,20 @@ define(['jquery'], function ($) {
         console = {};
     }
     for (var name in colors) {
-        var func = console[name] || function () {};
-        
-        console[name] = function () {
-            func.apply(console, arguments);
-
-            var line = $('<div>');
-            log.append(line);
-            for (var i = 0; i < arguments.length; i++) {
-                var section = $('<span>');
-                section.text(arguments[i]);
-                line.append(section);
-                line.css('color', colors[name]);
-            }
-        };
+        console[name] = (function (original, color) {
+            return function () {
+                func.apply(console, arguments);
+    
+                var line = $('<div>');
+                log.append(line);
+                for (var i = 0; i < arguments.length; i++) {
+                    var section = $('<span>');
+                    section.text(arguments[i]);
+                    line.append(section);
+                    line.css('color', color);
+                }
+            };
+        })(console[name] || function() {}, colors[name]);
     }
     return console;
 });
