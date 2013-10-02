@@ -17,7 +17,7 @@ body {
 }
 
 .center {
-    position: static;
+    position: fixed;
 
     left: 50%;
     width: 280px;
