@@ -14,10 +14,12 @@ body {
     background: #e299ff;
     border: 1px solid black;
     opacity: 0.6;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 #log div {
     border-top: 1px solid #885c99;
-    overflow: auto;
+    overflow-x: auto;
 }
 #log span {
     display: inline-block;
