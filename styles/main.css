@@ -2,6 +2,32 @@ body {
     direction: rtl;
 }
 
-.no-close .ui-dialog-titlebar-close {
-  display: none;
+.google-drive-auth-failed {
+    display: none;
+}
+
+.hide-everything {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgb(100, 60, 60, 60);
+    background: rgba(100, 60, 60, 60);
+}
+
+.center {
+    position: static;
+
+    left: 50%;
+    width: 280px;
+    margin-left: -140px;
+
+    top: 50%;
+    height: 180px;
+    margin-top: -90px;
+    
+    background: white;
+    border: solid black;
+    border-width: 1px 1px 2px 2px;
 }

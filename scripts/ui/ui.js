@@ -1,14 +1,16 @@
-define(['jquery', 'jqueryui'], function ($) {
+define(['require', 'jquery', 'jqueryui'], function (require, $) {
+    $('.google-drive-auth').click(function () {
+       require(['drive/auth'], function (auth) {
+           auth.authorize(true);
+       });
+    });
+    
     return {
         googleDriveAuthorizationSuccess: function () {
-            $('html').addClass('drive-authorized');
+            $('.google-drive-auth').remove();
         },
         googleDriveAuthorizationFailed: function () {
-            $('.google-drive-auth-failed').dialog({
-                modal: true,
-                closeOnEscape: false,
-                dialogClass: 'no-close'
-            });
+            $('.google-drive-auth-failed').show();
         }
     };
 });

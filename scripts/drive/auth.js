@@ -30,8 +30,8 @@ define(['./client_secrets', 'ui/ui'], function (secrets, ui) {
     };
     
     return {
-        authorize: function () {
-            attemptAuthorization(true);
+        authorize: function (force) {
+            attemptAuthorization(!force);
         }
     };
 });
