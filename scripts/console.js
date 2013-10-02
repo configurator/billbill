@@ -1,4 +1,34 @@
 define(['jquery'], function ($) {
+    var stringify = function (x) {
+        try {
+            if (typeof x != 'object'
+                || x instanceof String
+                || x instanceof Number) {
+                return x.toString();
+            }
+    
+            if (x instanceof Array) {
+                return '[' +
+                    x.map(stringify).join(', ') +
+                    ']';
+            }
+            
+            if (x.length
+                && x.length >= 0
+                && x.length == Math.floor(x.length)) {
+                return stringify(Array.prototype.slice.call(x));
+            }
+            
+            if (x instanceof HTMLElement) {
+                return '<' + x.tagName + ' ...>';
+            }
+            
+            return x.toString();
+        } catch (e) {
+            return '' + x;
+        }
+    };
+    
     var colors = {
         log: '#000000',
         warn: '#cc9900',
@@ -19,7 +49,7 @@ define(['jquery'], function ($) {
                 log.append(line);
                 for (var i = 0; i < arguments.length; i++) {
                     var section = $('<span>');
-                    section.text(arguments[i]);
+                    section.text(stringify(arguments[i]));
                     line.append(section);
                     line.css('color', color);
                 }
