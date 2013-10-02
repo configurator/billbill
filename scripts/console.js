@@ -4,7 +4,7 @@ define(['jquery'], function ($) {
             if (typeof x != 'object'
                 || x instanceof String
                 || x instanceof Number) {
-                return x.toString();
+                    return x.toString();
             }
     
             if (x instanceof Array) {
@@ -16,7 +16,7 @@ define(['jquery'], function ($) {
             if (x.length
                 && x.length >= 0
                 && x.length == Math.floor(x.length)) {
-                return stringify(Array.prototype.slice.call(x));
+                    return stringify(Array.prototype.slice.call(x));
             }
             
             if (x instanceof HTMLElement) {
@@ -25,7 +25,23 @@ define(['jquery'], function ($) {
             
             return x.toString();
         } catch (e) {
-            return '' + x;
+            try {
+                return JSON.stringify(x);
+            } catch (e) {
+                try {
+                    return '' + x;
+                } catch (e) {
+                    try {
+                        var result = '{';
+                        for (var prop in x) {
+                            result += '\n' + prop + ': ' + x[prop] + ',';
+                        }
+                        return result + '\n}';
+                    } catch (e) {
+                        return '(unprintable)';
+                    }
+                }
+            }
         }
     };
     
