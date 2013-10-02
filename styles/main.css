@@ -7,15 +7,20 @@ body {
     z-index: 10000;
     top: 0;
     left: 0;
+    max-width: 500px;
+    max-height: 400px;
     font-family: consolas, monospace;
     direction: ltr;
+    background: #e299ff;
+    border: 1px solid black;
+    opacity: 0.6;
 }
 #log div {
-    border-top: 1px solid gray;
+    border-top: 1px solid black;
 }
 #log span {
-    border-left: 1px solid gray;
-    border-right: 1px solid gray;
+    display: inline-block;
+    border: 1px solid #885c99;
 }
 
 .google-drive-auth-failed {
