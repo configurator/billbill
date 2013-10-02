@@ -12,8 +12,11 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgb(100, 60, 60, 60);
     background: rgba(100, 60, 60, 60);
+}
+
+.no-google-drive-auth .hide-everything {
+    background: rgba(100, 100, 100, 60);
 }
 
 .center {
