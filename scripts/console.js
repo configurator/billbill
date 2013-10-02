@@ -69,6 +69,9 @@ define(['jquery'], function ($) {
                     line.append(section);
                     line.css('color', color);
                 }
+                
+                // Scroll log to bottom
+                log.scrollTop(log.prop('scrollHeight'))
             };
         })(console[name] || function() {}, colors[name]);
     }

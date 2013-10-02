@@ -5,10 +5,10 @@ body {
 #log {
     position: absolute;
     z-index: 10000;
-    top: 0;
-    left: 0;
-    max-width: 500px;
-    max-height: 400px;
+    bottom: 10px;
+    left: 10px;
+    max-width: 600px;
+    max-height: 300px;
     font-family: consolas, monospace;
     direction: ltr;
     background: #e299ff;
