@@ -10,7 +10,7 @@ define(['./client_secrets'], function (secrets) {
                 {
                     'client_id': client_id,
                     'scope': scopes,
-                    'immediate': true
+                    'immediate': false
                 },
                 function (result) {
                     console.log('Google auth result: ', result);
