@@ -6,6 +6,7 @@ define(['./client_secrets', 'ui/ui'], function (secrets, ui) {
         authorization = null;
     
     var attemptAuthorization = function (immediate) {
+        console.log('Authorizing with Google Drive.')
         gapi.auth.authorize(
                 {
                     'client_id': client_id,
@@ -13,11 +14,12 @@ define(['./client_secrets', 'ui/ui'], function (secrets, ui) {
                     'immediate': immediate
                 },
                 function (result) {
-                    console.log('Google auth result: ', result);
+                    console.info('Google auth result: ', result);
                     
                     if (result && !result.error) {
                         console.log('Google Drive authorization successful.');
                         ui.googleDriveAuthorizationSuccess();
+                        require(['main'], function (main) { main.googleDriveAuthorized() });
                     } else if (immediate) {
                         console.log('Retrying authorization without immediacy');
                         attemptAuthorization(false);

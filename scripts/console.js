@@ -22,30 +22,27 @@ define(['jquery'], function ($) {
             if (x instanceof HTMLElement) {
                 return '<' + x.tagName + ' ...>';
             }
-            
-            return x.toString();
+        
+            return JSON.stringify(x);
         } catch (e) {
             try {
-                return JSON.stringify(x);
+                return '' + x;
             } catch (e) {
                 try {
-                    return '' + x;
-                } catch (e) {
-                    try {
-                        var result = '{';
-                        for (var prop in x) {
-                            result += '\n' + prop + ': ' + x[prop] + ',';
-                        }
-                        return result + '\n}';
-                    } catch (e) {
-                        return '(unprintable)';
+                    var result = '{';
+                    for (var prop in x) {
+                        result += '\n' + prop + ': ' + x[prop] + ',';
                     }
+                    return result + '\n}';
+                } catch (e) {
+                    return '(unprintable)';
                 }
             }
         }
     };
     
     var colors = {
+        info: '#666666',
         log: '#000000',
         warn: '#cc9900',
         error: '#cc0000'

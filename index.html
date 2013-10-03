@@ -3,36 +3,13 @@
     <head>
         <title>Billbill</title>
         <link rel="stylesheet" href="styles/main.css" />
+        <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/pepper-grinder/jquery-ui.min.css" />
     </head>
     <body class="loading">
         <div id="log"></div>
         
         Placeholder.
         
-        <div class="no-google-drive-auth google-drive-auth">
-            <div class="hide-everything"></div>
-            <div class="center">
-                <p>
-                    You must authorize this app to use Google Drive. A popup will open to allow this authorization.
-                </p>
-                <p>
-                    Click here to retry authorization.
-                </p>
-            </div>
-        </div>
-        
-        <div class="google-drive-auth-failed google-drive-auth">
-            <div class="hide-everything"></div>
-            <div class="center">
-                <p>
-                    Google Drive authorization failed. This app cannot work without such authorization.
-                </p>
-                <p>
-                    Click here to retry authorization.
-                </p>
-            </div>
-        </div>
-
         <script src="scripts/require.js"></script>
         <script>
             require.config({
@@ -50,8 +27,9 @@
             var googleDriveAPILoaded = function () {
                 console.log('Drive API loaded. Loading the rest of the scripts.');
                 
-                require(['main'], function () {
+                require(['main'], function (main) {
                     console.log('All scripts loaded.');
+                    main.loaded();
                 });
             };
         </script>
