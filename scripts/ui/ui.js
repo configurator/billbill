@@ -53,7 +53,8 @@
         var getView = function (id) {
             var result = new google.picker.DocsView(id);
             result.setIncludeFolders(true);
-            result.setMode(google.picker.DocsViewMode.GRID);
+            result.setMode(google.picker.DocsViewMode.LIST);
+            result.setParent('root');
             return result;
         };
         
