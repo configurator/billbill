@@ -35,7 +35,7 @@
         </div>
         
         <div class="item" style="display: none;">
-            <iframe class="viewUrl"></iframe>
+            <div class="viewUrl"></div>
             <div class="data">
                 <div class="actions">
                     <button class="previous-file btn">
@@ -72,6 +72,11 @@
         <script src="lib/jquery/jquery.min.js"></script>
         <script src="lib/jquery/jquery-ui.min.js"></script>
         <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+        <script>
+            // Fix for smartzoom's silly browser detection
+            $.browser = {};
+        </script>
+        <script src="lib/smartzoom/smartzoom.js"></script>
         <script src="scripts/memoize.js"></script>
         <script src="scripts/console.js"></script>
         <script src="scripts/define.js"></script>

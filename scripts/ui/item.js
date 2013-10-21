@@ -4,6 +4,9 @@
 (function () {
     
     var singleItem = $('.item'),
+        imageMimeRegex = /^image\//i,
+        pdfMimeRegex = /\/pdf/i,
+        
         currentlyShownItem = '',
         editing = false;
     
@@ -29,7 +32,27 @@
     
     define('ui.item', {
         createViewer: function (file) {
-            return $('<iframe>').attr('src', file.viewUrl);
+            console.log('Creating viewer for file ', file);
+            
+            var result;
+            if (imageMimeRegex.test(file.mimeType)) {
+                result = $('<img>').attr('src', file.viewUrl);
+            } else if (pdfMimeRegex.test(file.mimeType)) {
+                result = $('<div class="full-size-embed-container">').append(
+                    $('<embed>').attr({
+                        name: 'plugin',
+                        type: file.mimeType,
+                        src: file.viewUrl
+                    })
+                );
+            } else {
+                result = $('<iframe>').attr('src', file.viewUrl);
+            }
+            
+            result;
+            result.smartZoom();
+            
+            return result;
         },
         
         showItem: function (id) {
@@ -47,7 +70,8 @@
             currentlyShownItem = id;
             
             singleItem.find('.viewUrl')
-                .replaceWith(ui.item.createViewer(file).addClass('viewUrl'));
+                .empty()
+                .append(ui.item.createViewer(file));
 
             for (var key in propertyKinds) {
                 var value = propertyKinds[key].fileValue ? file[key] : props[key];

@@ -91,7 +91,7 @@ body {
     background: white;
     border: 2px solid #885c99;
 }
-.item iframe {
+.item .viewUrl {
     position: absolute;
     top: 0;
     left: 0;
@@ -99,6 +99,7 @@ body {
     width: 65%;
     border: none;
 }
+
 .item .data {
     position: absolute;
     top: 0;
@@ -115,4 +116,12 @@ body {
 input[type=number] {
     direction: ltr;
     text-align: right;
+}
+
+.full-size-embed-container, .full-size-embed-container > embed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
 }
