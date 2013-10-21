@@ -5,7 +5,6 @@
     define('main_loaded', function () {
         gapi.client.load('drive', 'v2', function () {
             gapi.load('picker', { 'callback': function () {
-                ui.finishedLoading();
                 drive.auth.authorize();
             }});
         });
@@ -18,6 +17,10 @@
         parentFoldersFound: function () {
             ui.parentFolderFound();
             drive.listFiles();
+        },
+        
+        filesListed: function () {
+            ui.finishedLoading();
         }
     });
 })();

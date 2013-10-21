@@ -132,6 +132,7 @@
                         getResults(request);
                     } else {
                         console.log('Finished listing all files');
+                        main.filesListed();
                     }
                 });
             };
