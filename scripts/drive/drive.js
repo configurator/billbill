@@ -19,7 +19,7 @@
         findParentFolder: function () {
             console.log('Searching for parent folder of all documents.');
             gapi.client.drive.files.list({
-                q: 'title = "' + parentFolderNameForAllBillbillFiles + '"',
+                q: 'title = "' + parentFolderNameForAllBillbillFiles + '" and trashed = false',
                 fields: parentFolderListFields
             }).execute(function (results) {
                 if (!results || results.error) {
@@ -107,6 +107,8 @@
             if (query == '') {
                 return;
             }
+            
+            query = '(' + query + ') and trashed = false';
             
             var getResults = function (request) {
                 request.execute(function (results) {
