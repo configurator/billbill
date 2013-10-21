@@ -1,9 +1,16 @@
-define(['require', 'drive/drive', 'ui/ui'], function (require, drive, ui) {
-    return {
-        loaded: function () {
-            drive.auth.authorize();
-        },
-        
+/* global define ui drive gapi */
+'use strict';
+
+(function () {
+    define('main_loaded', function () {
+        gapi.client.load('drive', 'v2', function () {
+            gapi.load('picker', { 'callback': function () {
+                ui.finishedLoading();
+                drive.auth.authorize();
+            }});
+        });
+    });
+    define('main', {
         googleDriveAuthorized: function () {
             drive.findParentFolder();
         },
@@ -12,5 +19,5 @@ define(['require', 'drive/drive', 'ui/ui'], function (require, drive, ui) {
             ui.parentFolderFound();
             drive.listFiles();
         }
-    };
-});
+    });
+})();

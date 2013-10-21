@@ -7,13 +7,16 @@ body {
     z-index: 10000;
     bottom: 10px;
     left: 10px;
-    max-width: 600px;
-    max-height: 300px;
     font-family: consolas, monospace;
     direction: ltr;
     background: #e299ff;
     border: 1px solid black;
     opacity: 0.6;
+}
+#log .log {
+    max-width: 600px;
+    max-height: 300px;
+
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -25,35 +28,91 @@ body {
     display: inline-block;
 }
 
-.google-drive-auth-failed {
+#log.log-hidden {
+    width: 28px;
+    height: 28px;
+}
+#log.log-hidden .log {
     display: none;
 }
 
-.hide-everything {
+#log .show-hide-log {
+    display: block;
+    position: absolute;
+    left: 1px;
+    bottom: 1px;
+    width: 24px;
+    height: 24px;
+
+    font-size: 18px;
+    text-align: center;
+    color: white;
+    background: black;
+
+    pointer-events: all;
+}
+
+.no-close .ui-dialog-titlebar-close {
+    display: none;
+}
+
+.content {
+    display: block;
+    width: 90%;
+    margin: auto;
+    border: 1px solid black;
+    padding: 10px;
+    background-color: #f8e5ff;
+}
+.content > ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+.content > ul > li {
+    border: 1px solid black;
+    padding: 4px;
+    margin: 3px;
+    background-color: white;
+}
+
+.actions .btn {
+    cursor: pointer;
+    background-color: #f8e5ff;
+    border: 1px solid black;
+}
+
+.item {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    bottom: 10px;
+    right: 10px;
+    background: white;
+    border: 2px solid #885c99;
+}
+.item iframe {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
+    height: 100%;
+    width: 65%;
+    border: none;
+}
+.item .data {
+    position: absolute;
+    top: 0;
+    left: 65%;
     bottom: 0;
-    background: rgba(100, 60, 60, 60);
+    right: 0;
+    border-left: 3px double #885c99;
+    padding: 7px;
+}
+.item .data .control {
+    margin: 4px 0;
 }
 
-.no-google-drive-auth .hide-everything {
-    background: rgba(100, 100, 100, 60);
-}
-
-.center {
-    position: fixed;
-
-    left: 50%;
-    width: 280px;
-    margin-left: -140px;
-
-    top: 50%;
-    height: 180px;
-    margin-top: -90px;
-    
-    background: white;
-    border: solid black;
-    border-width: 1px 1px 2px 2px;
+input[type=number] {
+    direction: ltr;
+    text-align: right;
 }

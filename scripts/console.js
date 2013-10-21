@@ -1,4 +1,7 @@
-define(['jquery'], function ($) {
+/* global $ console */
+'use strict';
+
+(function () {
     var stringify = function (x) {
         try {
             if (typeof x != 'object'
@@ -48,7 +51,12 @@ define(['jquery'], function ($) {
         error: '#cc0000'
     };
     
-    var log = $('#log');
+    var log = $('#log .log');
+    
+    $('#log .show-hide-log').click(function () {
+        $('#log').toggleClass('log-hidden');
+        log.scrollTop(log.prop('scrollHeight'));
+    });
     
     if (!console) {
         console = {};
@@ -68,9 +76,10 @@ define(['jquery'], function ($) {
                 }
                 
                 // Scroll log to bottom
-                log.scrollTop(log.prop('scrollHeight'))
+                log.scrollTop(log.prop('scrollHeight'));
             };
         })(console[name] || function() {}, colors[name]);
     }
     return console;
-});
+    
+})();

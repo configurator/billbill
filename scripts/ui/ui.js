@@ -1,11 +1,13 @@
-define(['require', 'jquery', 'jqueryui'], function (require, $) {
+/* global $ define drive memoize ui main google secrets */
+'use strict';
+
+(function () {
     var currentlyShownDialog = $();
     
     var showUnclosableDialog = function (title, text, click, buttons) {
         currentlyShownDialog.remove();
         
-        var message = $('<div class="no-close">');
-        message.addClass('no-close');
+        var message = $('<div>');
         if (title) {
             message.attr('title', title);
         }
@@ -24,7 +26,8 @@ define(['require', 'jquery', 'jqueryui'], function (require, $) {
         message.click(click);
         message.dialog({
             modal: true,
-            buttons: buttons
+            buttons: buttons,
+            dialogClass: 'no-close'
         });
         
         currentlyShownDialog = message;
@@ -42,16 +45,65 @@ define(['require', 'jquery', 'jqueryui'], function (require, $) {
             'Click here to retry authorization.'
         ],
         function () {
-            require(['drive/drive'], function (drive) {
-                drive.auth.authorize(true);
-            });
+            drive.auth.authorize(true);
         }
     );
     
-    return {
+    var drivePicker = memoize(function () {
+        var getView = function (id) {
+            var result = new google.picker.DocsView(id);
+            result.setIncludeFolders(true);
+            result.setMode(google.picker.DocsViewMode.GRID);
+            return result;
+        };
+        
+        var views = {};
+        views.upload = new google.picker.DocsUploadView();
+        views.upload.setIncludeFolders(true);
+        views.images = getView(google.picker.ViewId.DOCS_IMAGES);
+        views.pdfs = getView(google.picker.ViewId.PDFS);
+        
+        var picker = new google.picker.PickerBuilder()
+            .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
+            .setOAuthToken(secrets.web.client_id)
+            .setCallback(function (args) {
+                if (args && args.action == google.picker.Action.PICKED && args.docs && args.docs.length) {
+                    var ids = args.docs.map(function (doc) { return doc.id; });
+                    drive.addFiles(ids);
+                }
+            });
+        for (var name in views) {
+            picker = picker.addView(views[name]);
+        }
+        picker = picker.build();
+        
+        return picker;
+    });
+    
+    $('.content .actions .pick-drive-file').click(function () {
+        drivePicker().setVisible(true);
+    });
+    $('.content .actions .refresh').click(function () {
+        drive.listFiles();
+    });
+    $('.content .file-list').on('click', 'li', function () {
+        var item = $(this).data('item');
+        if (!item || !item.id) {
+            return;
+        }
+        
+        ui.item.showItem(item.id);
+    });
+    
+    define('ui', {
+        finishedLoading: function () {
+            $('body').removeClass('loading');
+        },
+        
         googleDriveAuthorizationSuccess: function () {
             hideUnclosableDialog();
         },
+        
         googleDriveAuthorizationFailed: function () {
             showUnclosableDialog(
                 'Authorizing',
@@ -60,12 +112,11 @@ define(['require', 'jquery', 'jqueryui'], function (require, $) {
                     'Click here to retry authorization.'
                 ],
                 function () {
-                    require(['drive/drive'], function (drive) {
-                        drive.auth.authorize(true);
-                    });
+                    drive.auth.authorize(true);
                 }
             );
         },
+        
         noParentFolderFound: function () {
             showUnclosableDialog(
                 'Installation required',
@@ -74,14 +125,48 @@ define(['require', 'jquery', 'jqueryui'], function (require, $) {
                     'Installation is required. Click here to install.'
                 ],
                 function () {
-                    require(['drive/drive'], function (drive) {
-                        drive.createParentFolder();
-                    });
+                    drive.createParentFolder();
                 }
             );
         },
+        
         parentFolderFound: function () {
             hideUnclosableDialog();
+        },
+        
+        updateKnownFile: function (file) {
+            var item = $('<li>').addClass('btn').addClass('btn-block');
+            item.append($('<span>').addClass('title').text(file.title));
+            for (var key in ui.item.propertyKinds) {
+                item.append($('<span>').addClass('property').addClass(key));
+            }
+            item.data('item', file);
+            item.data(file.id, 'id');
+            
+            var list = $('.content .file-list');
+            var oldItem = list.find(':data(' + file.id + ')');
+            if (oldItem.length) {
+                oldItem.replaceWith(item);
+            } else {
+                list.append(item);
+            }
+            
+            ui.updateProperties(file.id, drive.properties[file.id]);
+        },
+        
+        updateProperties: function (id, properties) {
+            if (!properties) {
+                return;
+            }
+            
+            var item = $('.content .file-list :data(' + id + ')');
+            if (!item.length) {
+                return;
+            }
+            
+            for (var key in ui.item.propertyKinds) {
+                item.find('.property.' + key).text(properties[key] || '');
+            }
         }
-    };
-});
+    });
+})();

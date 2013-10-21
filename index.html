@@ -2,37 +2,85 @@
 <html>
     <head>
         <title>Billbill</title>
-        <link rel="stylesheet" href="styles/main.css" />
-        <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/pepper-grinder/jquery-ui.min.css" />
+        <meta charset="utf-8">
     </head>
     <body class="loading">
-        <div id="log"></div>
-        
-        Placeholder.
-        
-        <script src="scripts/require.js"></script>
-        <script>
-            require.config({
-                baseUrl: 'scripts',
-                paths: {
-                    jquery: '//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min',
-                    jqueryui: '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min'
-                }
-            });
-            
-            require(['console'], function () {
-                console.log('Console overriden.');
-            });
-            
-            var googleDriveAPILoaded = function () {
-                console.log('Drive API loaded. Loading the rest of the scripts.');
+        <link rel="stylesheet" href="styles/loading.css" />
+
+        <link rel="stylesheet" href="styles/main.css" />
+        <link rel="stylesheet" href="lib/jquery/jquery-ui.min.css" />
+        <link rel="stylesheet" href="lib/bootstrap/css/bootstrap-rtl.css" />
+        <link rel="stylesheet" href="lib/bootstrap/css/bootstrap-theme.min.css" />
+
+        <div id="log" class="log-hidden">
+            <div class="log">
                 
-                require(['main'], function (main) {
-                    console.log('All scripts loaded.');
-                    main.loaded();
-                });
-            };
-        </script>
-        <script src="https://apis.google.com/js/client.js?onload=googleDriveAPILoaded"></script>
+            </div>
+            <span class="show-hide-log">
+                <span class="glyphicon glyphicon-resize-vertical"></span>
+            </span>
+        </div>
+        
+        <div class="content">
+            <ul class="actions">
+                <li class="pick-drive-file btn">
+                    הוסף קבצים
+                </li>
+                <li class="refresh btn">
+                    רענן רשימה
+                </li>
+            </ul>
+            <ul class="file-list">
+            </ul>
+        </div>
+        
+        <div class="item" style="display: none;">
+            <iframe class="viewUrl"></iframe>
+            <div class="data">
+                <div class="actions">
+                    <button class="previous-file btn">
+                        &lt;
+                    </button>
+                    <button class="close-file btn">
+                        בחזרה לרשימת הקבצים
+                    </button>
+                    <button class="next-file btn">
+                        &gt;
+                    </button>
+                </div>
+                <div class="title control input-group">
+                    <span class="name input-group-addon">
+                        שם קובץ
+                    </span>
+                    <span class="value form-control"></span>
+                </div>
+                <div class="supplier control input-group">
+                    <span class="name input-group-addon">
+                        ספק
+                    </span>
+                    <input type="text" class="value form-control" />
+                </div>
+                <div class="totalAmount control input-group">
+                    <span class="name input-group-addon">
+                        סה"כ כולל מע"מ
+                    </span>
+                    <input type="number" class="value form-control" />
+                </div>
+            </div>
+        </div>
+        
+        <script src="lib/jquery/jquery.min.js"></script>
+        <script src="lib/jquery/jquery-ui.min.js"></script>
+        <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+        <script src="scripts/memoize.js"></script>
+        <script src="scripts/console.js"></script>
+        <script src="scripts/define.js"></script>
+        <script src="scripts/ui/ui.js"></script>
+        <script src="scripts/ui/item.js"></script>
+        <script src="scripts/drive/client_secrets.js"></script>
+        <script src="scripts/drive/auth.js"></script>
+        <script src="scripts/drive/drive.js"></script>
+        <script src="scripts/main.js"></script>
+        <script src="https://apis.google.com/js/client.js?onload=main_loaded"></script>
     </body>
 </html>
