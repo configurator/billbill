@@ -11,73 +11,84 @@
         editing = false,
         
         preloadArea = $('<div>').hide(),
-        preloadedViewers = {};
+        preloadedViewers = {},
+        maxPreloadedViewers = 10;
         
     $('body').append(preloadArea);
     
     var propertyKinds = {
         title: {
-            name: 'שם קובץ',
             fileValue: true
         },
-        viewUrl: {
-            fileValue: true,
-            isViewer: true
-        },
-        supplier: {
-            name: 'ספק',
-            editable: true
-        },
-        totalAmount: {
-            name: 'סה"כ',
-            editable: true,
-            type: 'number'
-        }
+
+        supplier: {},
+        totalAmount: {}
     };
     
     define('ui.item', {
-        createViewer: function (file) {
-            console.log('Creating viewer for file ', file);
+        viewer: {
+            create: function (file) {
+                console.log('Creating viewer for file ', file);
+                
+                if (imageMimeRegex.test(file.mimeType)) {
+                    return $('<img>').attr('src', file.viewUrl);
+                } else if (pdfMimeRegex.test(file.mimeType)) {
+                    return $('<embed>').attr({
+                        name: 'plugin',
+                        type: file.mimeType,
+                        src: file.viewUrl
+                    });
+                } else {
+                    return $('<iframe>').attr('src', file.viewUrl);
+                }
+            },
             
-            if (imageMimeRegex.test(file.mimeType)) {
-                return $('<img>').attr('src', file.viewUrl);
-            } else if (pdfMimeRegex.test(file.mimeType)) {
-                return $('<embed>').attr({
-                    name: 'plugin',
-                    type: file.mimeType,
-                    src: file.viewUrl
+            preload: function (file) {
+                if (!file || !file.id) {
+                    return $();
+                }
+                
+                var viewer = ui.item.viewer.create(file);
+                viewer.data('id', file.id);
+                preloadArea.prepend(viewer);
+                preloadedViewers[file.id] = viewer;
+                
+                ui.item.viewer.purge();
+                
+                return viewer;
+            },
+            
+            get: function (file) {
+                if (!file || !file.id) {
+                    return $();
+                }
+                
+                return preloadedViewers[file.id] || ui.item.viewer.preload(file);
+            },
+            
+            hide: function () {
+                singleItem.find('.viewUrl').children().each(function () {
+                    preloadArea.prepend(this);
                 });
-            } else {
-                return $('<iframe>').attr('src', file.viewUrl);
-            }
-        },
-        
-        preloadViewer: function (file) {
-            if (!file || !file.id) {
-                return $();
-            }
+                ui.item.viewer.purge();
+            },
             
-            var viewer = ui.item.createViewer(file);
-            preloadArea.append(viewer);
-            preloadedViewers[file.id] = viewer;
-            return viewer;
-        },
-        
-        getViewer: function (file) {
-            if (!file || !file.id) {
-                return $();
-            }
+            delete: function (id) {
+                var viewer = preloadedViewers[id] || $();
+                delete preloadedViewers[id];
+                viewer.remove();
+            },
             
-            return preloadedViewers[file.id] || ui.item.preloadViewer(file);
-        },
-        
-        hideViewer: function () {
-            singleItem.find('.viewUrl').children().each($.fn.append.bind(preloadArea));
+            purge: function () {
+                preloadArea.children().filter(':gt('+maxPreloadedViewers+')').each(function () {
+                    ui.item.viewer.delete($(this).data('id'));
+                });
+            }
         },
         
         showItem: function (id) {
             editing = false;
-            ui.item.hideViewer();
+            ui.item.viewer.hide();
             
             var file = drive.knownFiles[id],
                 props = drive.properties[id];
@@ -92,7 +103,7 @@
             
             singleItem.find('.viewUrl')
                 .empty()
-                .append(ui.item.getViewer(file));
+                .append(ui.item.viewer.get(file));
                 
             for (var key in propertyKinds) {
                 var value = propertyKinds[key].fileValue ? file[key] : props[key];
@@ -107,8 +118,9 @@
             editing = true;
             singleItem.find(':focusable').not('.btn').first().focus();
             
-            // Preload next item, for quick browsing
-            ui.item.getViewer(ui.item.getNextFile(1));
+            // Preload next and previous item, for quick browsing
+            ui.item.viewer.get(ui.item.getNextFile(1));
+            ui.item.viewer.get(ui.item.getNextFile(-1));
         },
         
         inputFieldValueChanged: function () {
@@ -124,7 +136,7 @@
         },
         
         showList: function () {
-            ui.item.hideViewer();
+            ui.item.viewer.hide();
             singleItem.hide();
 
             editing = false;
