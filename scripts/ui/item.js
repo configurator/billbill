@@ -8,7 +8,12 @@
         pdfMimeRegex = /\/pdf/i,
         
         currentlyShownItem = '',
-        editing = false;
+        editing = false,
+        
+        preloadArea = $('<div>').hide(),
+        preloadedViewers = {};
+        
+    $('body').append(preloadArea);
     
     var propertyKinds = {
         title: {
@@ -47,8 +52,32 @@
             }
         },
         
+        preloadViewer: function (file) {
+            if (!file || !file.id) {
+                return $();
+            }
+            
+            var viewer = ui.item.createViewer(file);
+            preloadArea.append(viewer);
+            preloadedViewers[file.id] = viewer;
+            return viewer;
+        },
+        
+        getViewer: function (file) {
+            if (!file || !file.id) {
+                return $();
+            }
+            
+            return preloadedViewers[file.id] || ui.item.preloadViewer(file);
+        },
+        
+        hideViewer: function () {
+            singleItem.find('.viewUrl').children().each($.fn.append.bind(preloadArea));
+        },
+        
         showItem: function (id) {
             editing = false;
+            ui.item.hideViewer();
             
             var file = drive.knownFiles[id],
                 props = drive.properties[id];
@@ -63,7 +92,7 @@
             
             singleItem.find('.viewUrl')
                 .empty()
-                .append(ui.item.createViewer(file));
+                .append(ui.item.getViewer(file));
                 
             for (var key in propertyKinds) {
                 var value = propertyKinds[key].fileValue ? file[key] : props[key];
@@ -77,6 +106,9 @@
             singleItem.show();
             editing = true;
             singleItem.find(':focusable').not('.btn').first().focus();
+            
+            // Preload next item, for quick browsing
+            ui.item.getViewer(ui.item.getNextFile(1));
         },
         
         inputFieldValueChanged: function () {
@@ -92,6 +124,7 @@
         },
         
         showList: function () {
+            ui.item.hideViewer();
             singleItem.hide();
 
             editing = false;
@@ -116,15 +149,24 @@
             }
         },
         
+        getNextFile: function (addition) {
+            var list = $('.content .file-list').children('li'),
+                currentItem = list.filter(':data(' + currentlyShownItem + ')'),
+                index = list.index(currentItem),
+                selection = list.eq(index + addition),
+                item = selection.data('item');
+            
+            if (index + addition >= 0 && item && item.id) {
+                return item;
+            } else {
+                return false;
+            }
+        },
+        
         advanceFile: function (addition) {
             return function  () {
-                var list = $('.content .file-list').children('li'),
-                    currentItem = list.filter(':data(' + currentlyShownItem + ')'),
-                    index = list.index(currentItem),
-                    selection = list.eq(index + addition),
-                    item = selection.data('item');
-                
-                if (index + addition >= 0 && item && item.id) {
+                var item = ui.item.getNextFile(addition);
+                if (item && item.id) {
                     ui.item.showItem(item.id);
                 } else {
                     ui.item.showList();
