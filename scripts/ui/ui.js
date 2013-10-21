@@ -1,8 +1,11 @@
-/* global $ define drive memoize ui main google secrets */
+/* global $ define drive memoize ui main google secrets Set */
 'use strict';
 
 (function () {
-    var currentlyShownDialog = $();
+    var knownPropertyValues = {
+            supplier: new Set()
+        },
+        currentlyShownDialog = $();
     
     var showUnclosableDialog = function (title, text, click, buttons) {
         currentlyShownDialog.remove();
@@ -97,6 +100,8 @@
     });
     
     define('ui', {
+        knownPropertyValues: knownPropertyValues,
+        
         finishedLoading: function () {
             $('body').removeClass('loading');
         },
@@ -136,10 +141,12 @@
         },
         
         updateKnownFile: function (file) {
-            var item = $('<li>').addClass('btn').addClass('btn-block');
-            item.append($('<span>').addClass('title').text(file.title));
+            var item = $('<li>').addClass('input-group');
+            item.append($('<span>').addClass('form-control').addClass('title').text(file.title));
             for (var key in ui.item.propertyKinds) {
-                item.append($('<span>').addClass('property').addClass(key));
+                if (!ui.item.propertyKinds[key].fileValue) {
+                    item.append($('<span>').addClass('input-group-addon').addClass('property').addClass(key));
+                }
             }
             item.data('item', file);
             item.data(file.id, 'id');
@@ -167,6 +174,10 @@
             
             for (var key in ui.item.propertyKinds) {
                 item.find('.property.' + key).text(properties[key] || '');
+                
+                if (knownPropertyValues[key] && properties[key]) {
+                    knownPropertyValues[key].add(properties[key]);
+                }
             }
         }
     });

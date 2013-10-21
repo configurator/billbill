@@ -26,10 +26,10 @@
     };
     
     define('ui.item', {
+        propertyKinds: propertyKinds,
+        
         viewer: {
             create: function (file) {
-                console.log('Creating viewer for file ', file);
-                
                 if (imageMimeRegex.test(file.mimeType)) {
                     return $('<img>').attr('src', file.viewUrl);
                 } else if (pdfMimeRegex.test(file.mimeType)) {
@@ -218,4 +218,11 @@
     $('.item .actions .close-file').click(ui.item.showList);
     $('.item .actions .previous-file').click(ui.item.advanceFile(-1));
     $('.item .actions .next-file').click(ui.item.advanceFile(1));
+    
+    $('.control.supplier .value').autocomplete({
+        autoFocus: true,
+        delay: 0,
+        source: ui.knownPropertyValues.supplier.values,
+        change: ui.item.inputFieldValueChanged
+    });
 })();

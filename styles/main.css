@@ -69,11 +69,11 @@ body {
     margin: 0;
     padding: 0;
 }
-.content > ul > li {
-    border: 1px solid black;
-    padding: 4px;
-    margin: 3px;
-    background-color: white;
+.content > .actions > li {
+    display: inline-block;
+}
+.content > .file-list > li {
+    margin-top: 5px;
 }
 
 .actions .btn {

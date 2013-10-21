@@ -1,10 +1,13 @@
-/* global define ui drive gapi */
+/* global define ui drive gapi registerErrorSafeExecution */
 'use strict';
 
 (function () {
     define('main_loaded', function () {
         gapi.client.load('drive', 'v2', function () {
             gapi.load('picker', { 'callback': function () {
+                
+                registerErrorSafeExecution();
+                
                 drive.auth.authorize();
             }});
         });

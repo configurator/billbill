@@ -21,7 +21,7 @@
             gapi.client.drive.files.list({
                 q: 'title = "' + parentFolderNameForAllBillbillFiles + '" and trashed = false',
                 fields: parentFolderListFields
-            }).execute(function (results) {
+            }).safeExecute(function (results) {
                 if (!results || results.error) {
                     console.error('Error getting container folder; results:', results);
                 } else {
@@ -42,7 +42,7 @@
                         gapi.client.drive.properties.get({
                             fileId: id,
                             propertyKey: parentFolderMarkerProperty
-                        }).execute(function (results) {
+                        }).safeExecute(function (results) {
                             if (results && !results.error) {
                                 parentFolders[id] = {};
                             }
@@ -68,7 +68,7 @@
                     description: 'This folder is used by Billbill internally.',
                     mimeType: 'application/vnd.google-apps.folder'
                 }
-            }).execute(function (results) {
+            }).safeExecute(function (results) {
                 if (!results || results.error) {
                     console.error('Error creating container folder; results: ', results);
                 } else {
@@ -81,7 +81,7 @@
                             value: 1,
                             visibility: 'PRIVATE'
                         }
-                    }).execute(function (results) {
+                    }).safeExecute(function (results) {
                         if (!results || results.error) {
                             console.error('Error setting container folder marker property', results);
                         } else {
@@ -110,8 +110,10 @@
             
             query = '(' + query + ') and trashed = false';
             
+            console.log('Query ', { q: query, fields: fileListFields });
+            
             var getResults = function (request) {
-                request.execute(function (results) {
+                request.safeExecute(function (results) {
                     if (!results || results.error) {
                         console.error('Error getting file list.', results);
                         return;
@@ -128,6 +130,7 @@
                     var nextPageToken = results.nextPageToken;
                     if (nextPageToken) {
                         request = gapi.client.drive.files.list({
+                            q: query,
                             pageToken: nextPageToken,
                             fields: fileListFields
                         });
@@ -146,16 +149,13 @@
         },
         
         loadProperties: function (id) {
-            console.log('Loading properties for file ' + id);
             gapi.client.drive.properties.list({
                 fileId: id
-            }).execute(function (result) {
+            }).safeExecute(function (result) {
                 if (!result || result.error) {
                     console.error('Error loading properties for file ' + id, result);
                     return;
                 }
-                
-                console.info('Properties load ' + id + ' results: ', result);
                 
                 var props = {};
                 
@@ -170,17 +170,15 @@
         },
         
         refreshFile: function (id) {
-            console.log('Loading data for file ' + id);
-            
             gapi.client.drive.files.get({
                 fileId: id,
                 fields: fileGetFields
-            }).execute(function (result) {
+            }).safeExecute(function (result) {
                 if (!result || result.error) {
                     console.error('Error loading file ' + id, result);
                     return;
                 }
-                console.info('File load ' + id + ' results: ', result);
+
                 drive.normalizeAndSaveFile(result);
                 ui.updateKnownFile(result);
             });
@@ -205,7 +203,7 @@
                 gapi.client.drive.parents.insert({
                     fileId: id,
                     resource: { id: parentFolderId }
-                }).execute(function () {
+                }).safeExecute(function () {
                     console.log('Added file to list.');
                     drive.listFiles();
                 });
@@ -213,6 +211,7 @@
         },
         
         setProperty: function (file, key, value) {
+            console.log('Saving property ' + file + '.' + key + ' = ', value);
             gapi.client.drive.properties.insert({
                 fileId: file,
                 resource: {
@@ -220,7 +219,7 @@
                     value: value,
                     visibility: 'PRIVATE'
                 }
-            }).execute(function (results) {
+            }).safeExecute(function (results) {
                 if (!results || results.error) {
                     console.error('Error setting property on file', results);
                 } else {
