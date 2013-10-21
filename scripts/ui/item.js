@@ -34,25 +34,17 @@
         createViewer: function (file) {
             console.log('Creating viewer for file ', file);
             
-            var result;
             if (imageMimeRegex.test(file.mimeType)) {
-                result = $('<img>').attr('src', file.viewUrl);
+                return $('<img>').attr('src', file.viewUrl);
             } else if (pdfMimeRegex.test(file.mimeType)) {
-                result = $('<div class="full-size-embed-container">').append(
-                    $('<embed>').attr({
-                        name: 'plugin',
-                        type: file.mimeType,
-                        src: file.viewUrl
-                    })
-                );
+                return $('<embed>').attr({
+                    name: 'plugin',
+                    type: file.mimeType,
+                    src: file.viewUrl
+                });
             } else {
-                result = $('<iframe>').attr('src', file.viewUrl);
+                return $('<iframe>').attr('src', file.viewUrl);
             }
-            
-            result;
-            result.smartZoom();
-            
-            return result;
         },
         
         showItem: function (id) {
@@ -72,7 +64,7 @@
             singleItem.find('.viewUrl')
                 .empty()
                 .append(ui.item.createViewer(file));
-
+                
             for (var key in propertyKinds) {
                 var value = propertyKinds[key].fileValue ? file[key] : props[key];
                 
