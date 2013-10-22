@@ -261,6 +261,7 @@
 
             if (!contextFileRow.length) {
                 group.append(fileRow);
+                ui.sort();
             }
         }
     });
