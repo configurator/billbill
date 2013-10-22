@@ -9,7 +9,7 @@
         $('.content .file-list .by-' + prop).each(function () {
             var $this = $(this);
 
-            if (value && value != $this.data(prop)) {
+            if (value && $this.data(prop).indexOf(value) == -1) {
                 $this.hide();
             } else {
                 $this.show();
