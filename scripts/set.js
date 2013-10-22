@@ -63,4 +63,5 @@
     
     define('Set', function (args) { return new Set(args); });
     define('Set.MonthSet', function (args) { return new MonthSet(args); });
+    define('Set.MonthSet.normalize', MonthSet.prototype.normalize);
 })();

@@ -174,6 +174,8 @@
                 return;
             }
             
+            item.data('props', properties);
+            
             for (var key in ui.item.propertyKinds) {
                 var kind = ui.item.propertyKinds[key];
 
