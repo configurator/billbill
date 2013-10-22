@@ -64,13 +64,20 @@ body {
     padding: 10px;
     background-color: #f8e5ff;
 }
-.content > ul {
+.content ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
 }
-.content > .actions > li {
+.content > .actions {
+    display: block;
+}
+.content > .actions > * {
     display: inline-block;
+    margin-top: 2px;
+}
+.content > .actions .search {
+    width: 200px;
 }
 .content > .file-list > li {
     margin-top: 5px;

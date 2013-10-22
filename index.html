@@ -12,6 +12,11 @@
         <link rel="stylesheet" href="lib/bootstrap/css/bootstrap-rtl.css" />
         <link rel="stylesheet" href="lib/bootstrap/css/bootstrap-theme.min.css" />
 
+        <script src="lib/jquery/jquery.min.js"></script>
+        <script src="lib/jquery/jquery-ui.min.js"></script>
+        <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+        <script src="lib/date/date.js"></script>
+
         <!--<div id="log" class="log-hidden">-->
         <!--    <div class="log">-->
                 
@@ -22,14 +27,22 @@
         <!--</div>-->
         
         <div class="content">
-            <ul class="actions">
-                <li class="pick-drive-file btn">
-                    הוסף קבצים
-                </li>
-                <li class="refresh btn">
-                    רענן רשימה
-                </li>
-            </ul>
+            <div class="actions">
+                <ul class="btn-group">
+                    <li class="pick-drive-file btn btn-default">
+                        הוסף קבצים
+                    </li>
+                    <li class="refresh btn btn-default">
+                        רענן רשימה
+                    </li>
+                </ul>
+                
+                <input class="search by-supplier form-control" type="text" placeholder="סינון לפי ספק">
+                <select class="search by-month form-control">
+                    <option value="" class="a">סינון לפי חודש</option>
+                </select>
+            </div>
+            </span>
             <ul class="file-list">
             </ul>
         </div>
@@ -54,9 +67,45 @@
                     </span>
                     <span class="value form-control"></span>
                 </div>
+                <label class="itemType control input-group">
+                    <span class="name input-group-addon">
+                        סוג פריט
+                    </span>
+                    <select class="value form-control">
+                        <option value=""></option>
+                        <option value="tax receipt">חשבונית</option>
+                        <option value="summary receipt">חשבונית סיכום</option>
+                        <option value="delivery confirmation">תעודת משלוח</option>
+                        <option value="check">צ'ק</option>
+                        <option value="receipt">קבלה</option>
+                    </select>
+                </label>
+                <label class="identifier control input-group">
+                    <span class="name input-group-addon">
+                        מס' פריט
+                    </span>
+                    <input type="text" class="value form-control" />
+                </label>
+                <script>
+                    // Bind the identifier's name label to the item type's value
+                    (function () {
+                        var kindSelect = $('.item .itemType.control select.value'),
+                            identifierName = $('.item .identifier.control span.name');
+                        
+                        kindSelect.change(function () {
+                            identifierName.text("מס' " + (kindSelect.find(':selected').text() || 'פריט'));
+                        });
+                    })();
+                </script>
                 <label class="supplier control input-group">
                     <span class="name input-group-addon">
                         ספק
+                    </span>
+                    <input type="text" class="value form-control" />
+                </label>
+                <label class="date control input-group">
+                    <span class="name input-group-addon">
+                        תאריך
                     </span>
                     <input type="text" class="value form-control" />
                 </label>
@@ -69,9 +118,6 @@
             </div>
         </div>
         
-        <script src="lib/jquery/jquery.min.js"></script>
-        <script src="lib/jquery/jquery-ui.min.js"></script>
-        <script src="lib/bootstrap/js/bootstrap.min.js"></script>
         <script src="scripts/memoize.js"></script>
         <!--<script src="scripts/console.js"></script>-->
         <script src="scripts/define.js"></script>
@@ -79,6 +125,8 @@
         <script src="scripts/error-safe-execution.js"></script>
         <script src="scripts/ui/ui.js"></script>
         <script src="scripts/ui/item.js"></script>
+        <script src="scripts/ui/autocomplete.js"></script>
+        <script src="scripts/ui/search.js"></script>
         <script src="scripts/drive/client_secrets.js"></script>
         <script src="scripts/drive/auth.js"></script>
         <script src="scripts/drive/drive.js"></script>

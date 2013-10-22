@@ -16,17 +16,116 @@
         
     $('body').append(preloadArea);
     
+    var formats = {
+        validationResults: {
+            success: 'has-success',
+            error: 'has-error',
+            none: '',
+            
+            allResults: 'has-error has-success'
+        },
+        
+        text: {
+            normalize: function (value) {
+                return (value || '').trim();
+            },
+            
+            validate: function (value) {
+                return formats.validationResults.success;
+            }
+        },
+        date: {
+            normalize: function (text) {
+                var value = Date.parseExact(text, [
+                    'd/M/yy',
+                    'd M yy',
+                    'd/M',
+                    'd M',
+                    'ddMM',
+                    'ddMMyy',
+                    'ddMMyyyy'
+                ]);
+                
+                if (value) {
+                    return value.toString('dd/MM/yyyy');
+                } else {
+                    return text;
+                }
+            },
+            
+            validate: function (value) {
+                return Date.parseExact(value, 'dd/MM/yyyy')
+                    ? formats.validationResults.success
+                    : formats.validationResults.error;
+            }
+        },
+        
+        number: {
+            normalize: function (value) {
+                return (value || '').trim();
+            },
+            
+            validate: function (value) {
+                return isNaN(Number(value).valueOf())
+                    ? formats.validationResults.error
+                    : formats.validationResults.success;
+            }
+        },
+        
+        regex: function (regex) {
+            return {
+                normalize: formats.text.normalize,
+                
+                validate: function (value) {
+                    return regex.test(value)
+                        ? formats.validationResults.success
+                        : formats.validationResults.error;
+                }
+            }
+        }
+    };
+    
+    var listTranslators = {
+        select: function (key) {
+            var select = singleItem.find('.control.' + key + ' select.value');
+            
+            return function (value) {
+                return select.find('[value="' + value + '"]').text() || value;
+            };
+        }
+    };
+    
     var propertyKinds = {
         title: {
             fileValue: true
         },
-
-        supplier: {},
-        totalAmount: {}
+        
+        itemType: {
+            format: formats.text,
+            shownInList: true,
+            listTranslator: listTranslators.select('itemType')
+        },
+        identifier: {
+            format: formats.regex(/^[- /A-Z0-9]*$/),
+            shownInList: true
+        },
+        supplier: {
+            format: formats.text,
+            shownInList: true
+        },
+        totalAmount: {
+            format: formats.number,
+            shownInList: true
+        },
+        date: {
+            format: formats.date,
+            shownInList: true
+        }
     };
     
     define('ui.item', {
         propertyKinds: propertyKinds,
+        formats: formats,
         
         viewer: {
             create: function (file) {
@@ -106,11 +205,19 @@
                 .append(ui.item.viewer.get(file));
                 
             for (var key in propertyKinds) {
-                var value = propertyKinds[key].fileValue ? file[key] : props[key];
+                var kind = propertyKinds[key],
+                    value = kind.fileValue ? file[key] : props[key];
                 
                 var tag = singleItem.find('.control.' + key + ' .value');
                 if (tag.length) {
                     tag.data('get-set-value').call(tag, value || '');
+                    tag.change();
+                }
+                
+                tag.parent().removeClass(formats.validationResults.allResults);
+                
+                if (kind.format && kind.format.validate && value) {
+                    tag.parent().addClass(kind.format.validate(value));
                 }
             }
             
@@ -130,9 +237,23 @@
             
             var $this = $(this),
                 key = $this.data('key'),
-                value = $this.data('get-set-value').call($this);
+                value = $this.data('get-set-value').call($this),
+                kind = propertyKinds[key];
             
-            drive.setProperty(currentlyShownItem, key, value);
+            if (kind) {
+                if (kind.format && kind.format.normalize) {
+                    value = kind.format.normalize(value);
+                    $this.data('get-set-value').call($this, value);
+                }
+
+                $this.parent().removeClass(formats.validationResults.allResults);
+                
+                if (kind.format && kind.format.validate && value) {
+                    $this.parent().addClass(kind.format.validate(value));
+                }
+                
+                drive.setProperty(currentlyShownItem, key, value);
+            }
         },
         
         showList: function () {
@@ -215,14 +336,7 @@
         control.keypress(ui.item.inputControlKeyPress);
     }
     
-    $('.item .actions .close-file').click(ui.item.showList);
-    $('.item .actions .previous-file').click(ui.item.advanceFile(-1));
-    $('.item .actions .next-file').click(ui.item.advanceFile(1));
-    
-    $('.control.supplier .value').autocomplete({
-        autoFocus: true,
-        delay: 0,
-        source: ui.knownPropertyValues.supplier.values,
-        change: ui.item.inputFieldValueChanged
-    });
+    singleItem.find('.actions .close-file').click(ui.item.showList);
+    singleItem.find('.actions .previous-file').click(ui.item.advanceFile(-1));
+    singleItem.find('.actions .next-file').click(ui.item.advanceFile(1));
 })();

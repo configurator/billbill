@@ -3,7 +3,8 @@
 
 (function () {
     var knownPropertyValues = {
-            supplier: new Set()
+            supplier: new Set(),
+            date: new Set.MonthSet()
         },
         currentlyShownDialog = $();
     
@@ -144,7 +145,8 @@
             var item = $('<li>').addClass('input-group');
             item.append($('<span>').addClass('form-control').addClass('title').text(file.title));
             for (var key in ui.item.propertyKinds) {
-                if (!ui.item.propertyKinds[key].fileValue) {
+                var kind = ui.item.propertyKinds[key];
+                if (kind.shownInList) {
                     item.append($('<span>').addClass('input-group-addon').addClass('property').addClass(key));
                 }
             }
@@ -173,7 +175,17 @@
             }
             
             for (var key in ui.item.propertyKinds) {
-                item.find('.property.' + key).text(properties[key] || '');
+                var kind = ui.item.propertyKinds[key];
+
+                if (kind.shownInList) {
+                    var value = properties[key];
+                    
+                    if (kind.listTranslator) {
+                        value = kind.listTranslator(value);
+                    }
+                    
+                    item.find('.property.' + key).text(value || '');
+                }
                 
                 if (knownPropertyValues[key] && properties[key]) {
                     knownPropertyValues[key].add(properties[key]);
