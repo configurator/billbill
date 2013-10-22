@@ -3,24 +3,23 @@
 (function () {
     var searchControls = $('.content .actions .search');
 
-    var search = function () {
-        var month = searchControls.filter('.by-month').val();
-        var supplier = (searchControls.filter('.by-supplier').val() || '').trim();
+    var searchBy = function (prop) {
+        var value = (searchControls.filter('.by-' + prop).val() || '').trim();
 
-        $('.content .file-list').children().each(function () {
-            var line = $(this),
-                properties = line.data('props');
+        $('.content .file-list .by-' + prop).each(function () {
+            var $this = $(this);
 
-            line.show();
-
-            if (month && month != Set.MonthSet.normalize(properties.date)) {
-                line.hide();
-            }
-
-            if (supplier && properties.supplier && properties.supplier.indexOf(supplier) == -1) {
-                line.hide();
+            if (value && value != $this.data(prop)) {
+                $this.hide();
+            } else {
+                $this.show();
             }
         });
+    }
+
+    var search = function () {
+        searchBy('month');
+        searchBy('supplier');
     };
 
     searchControls.on('change keypress autocompletefocus autocompleteresponse autocompleteselect autocompleteclose', search);

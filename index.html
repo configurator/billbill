@@ -3,7 +3,7 @@
     <head>
         <title>Billbill</title>
         <meta charset="utf-8">
-        
+
         <link rel="stylesheet" href="styles/loading.css" />
     </head>
     <body class="loading">
@@ -19,13 +19,13 @@
 
         <!--<div id="log" class="log-hidden">-->
         <!--    <div class="log">-->
-                
+
         <!--    </div>-->
         <!--    <span class="show-hide-log">-->
         <!--        <span class="glyphicon glyphicon-resize-vertical"></span>-->
         <!--    </span>-->
         <!--</div>-->
-        
+
         <div class="content">
             <div class="actions">
                 <ul class="btn-group">
@@ -36,17 +36,17 @@
                         רענן רשימה
                     </li>
                 </ul>
-                
+
                 <input class="search by-supplier form-control" type="text" placeholder="סינון לפי ספק">
                 <select class="search by-month form-control">
                     <option value="" class="a">סינון לפי חודש</option>
                 </select>
             </div>
             </span>
-            <ul class="file-list">
-            </ul>
+            <div class="file-list list-group">
+            </div>
         </div>
-        
+
         <div class="item" style="display: none;">
             <div class="viewUrl"></div>
             <div class="data">
@@ -91,7 +91,7 @@
                     (function () {
                         var kindSelect = $('.item .itemType.control select.value'),
                             identifierName = $('.item .identifier.control span.name');
-                        
+
                         kindSelect.change(function () {
                             identifierName.text("מס' " + (kindSelect.find(':selected').text() || 'פריט'));
                         });
@@ -117,7 +117,7 @@
                 </label>
             </div>
         </div>
-        
+
         <script src="scripts/memoize.js"></script>
         <!--<script src="scripts/console.js"></script>-->
         <script src="scripts/define.js"></script>

@@ -7,15 +7,15 @@
             date: new Set.MonthSet()
         },
         currentlyShownDialog = $();
-    
+
     var showUnclosableDialog = function (title, text, click, buttons) {
         currentlyShownDialog.remove();
-        
+
         var message = $('<div>');
         if (title) {
             message.attr('title', title);
         }
-        
+
         if (text instanceof Array) {
             for (var i = 0; i < text.length; i++) {
                 var line = $('<p>');
@@ -25,7 +25,7 @@
         } else {
             message.text(text);
         }
-        
+
         $('body').append(message);
         message.click(click);
         message.dialog({
@@ -33,15 +33,15 @@
             buttons: buttons,
             dialogClass: 'no-close'
         });
-        
+
         currentlyShownDialog = message;
         return message;
     };
-    
+
     var hideUnclosableDialog = function () {
         currentlyShownDialog.remove();
     };
-    
+
     showUnclosableDialog(
         'Authorizing',
         [
@@ -52,7 +52,7 @@
             drive.auth.authorize(true);
         }
     );
-    
+
     var drivePicker = memoize(function () {
         var getView = function (id) {
             var result = new google.picker.DocsView(id);
@@ -61,13 +61,13 @@
             result.setParent('root');
             return result;
         };
-        
+
         var views = {};
         views.upload = new google.picker.DocsUploadView();
         views.upload.setIncludeFolders(true);
         views.images = getView(google.picker.ViewId.DOCS_IMAGES);
         views.pdfs = getView(google.picker.ViewId.PDFS);
-        
+
         var picker = new google.picker.PickerBuilder()
             .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
             .setOAuthToken(secrets.web.client_id)
@@ -81,10 +81,10 @@
             picker = picker.addView(views[name]);
         }
         picker = picker.build();
-        
+
         return picker;
     });
-    
+
     $('.content .actions .pick-drive-file').click(function () {
         drivePicker().setVisible(true);
     });
@@ -96,21 +96,21 @@
         if (!item || !item.id) {
             return;
         }
-        
+
         ui.item.showItem(item.id);
     });
-    
+
     define('ui', {
         knownPropertyValues: knownPropertyValues,
-        
+
         finishedLoading: function () {
             $('body').removeClass('loading');
         },
-        
+
         googleDriveAuthorizationSuccess: function () {
             hideUnclosableDialog();
         },
-        
+
         googleDriveAuthorizationFailed: function () {
             showUnclosableDialog(
                 'Authorizing',
@@ -123,7 +123,7 @@
                 }
             );
         },
-        
+
         noParentFolderFound: function () {
             showUnclosableDialog(
                 'Installation required',
@@ -136,13 +136,72 @@
                 }
             );
         },
-        
+
         parentFolderFound: function () {
             hideUnclosableDialog();
         },
-        
+
+        getGroup: function (properties) {
+            properties = properties || {};
+
+            var month = Set.MonthSet.normalize(properties.date),
+                supplier = properties.supplier || '';
+
+            var getOrCreateChild = function (item, property, value, childClass) {
+                var child = item.children().filter(function () {
+                        return $(this).data(property) == value;
+                    }),
+                    result = child && child.children('.list-group-item-text');
+
+                if (child && child.length && result && result.length) {
+                    return result;
+                }
+
+                item.append(
+                    child = $('<div>')
+                    .addClass('list-group-item')
+                    .addClass('by-' + property)
+                    .data(property, value)
+                    .append(
+                        $('<h4>')
+                        .addClass('list-group-item-heading')
+                        .text(value)
+                    )
+                    .append(
+                        result = $('<div>')
+                        .addClass('list-group-item-text')
+                        .addClass(childClass || '')
+                    )
+                );
+
+                return result;
+            };
+
+            var list = $('.content .file-list'),
+                monthChild = getOrCreateChild(list, 'month', month, month, 'list-group'),
+                supplierChild = getOrCreateChild(monthChild, 'supplier', supplier),
+                ul = supplierChild.children('ul');
+
+            if (ul && ul.length) {
+                return ul;
+            }
+
+            supplierChild.append(
+                ul = $('<ul>')
+            );
+            return ul;
+        },
+
+        getFileRow: function (id, context) {
+            if (!context) {
+                context = $('.content .file-list');
+            }
+
+            return context.find('.file-row:data(' + id + ')');
+        },
+
         updateKnownFile: function (file) {
-            var item = $('<li>').addClass('input-group');
+            var item = $('<li>').addClass('file-row').addClass('input-group');
             item.append($('<span>').addClass('form-control').addClass('title').text(file.title));
             for (var key in ui.item.propertyKinds) {
                 var kind = ui.item.propertyKinds[key];
@@ -152,46 +211,56 @@
             }
             item.data('item', file);
             item.data(file.id, 'id');
-            
-            var list = $('.content .file-list');
-            var oldItem = list.find(':data(' + file.id + ')');
+
+            var oldItem = ui.getFileRow(file.id);
             if (oldItem.length) {
                 oldItem.replaceWith(item);
             } else {
-                list.append(item);
+                ui.getGroup().append(item);
             }
-            
+
             ui.updateProperties(file.id, drive.properties[file.id]);
         },
-        
+
         updateProperties: function (id, properties) {
             if (!properties) {
                 return;
             }
-            
-            var item = $('.content .file-list :data(' + id + ')');
+
+            var item = ui.getFileRow(id);
             if (!item.length) {
                 return;
             }
-            
+
             item.data('props', properties);
-            
+
             for (var key in ui.item.propertyKinds) {
                 var kind = ui.item.propertyKinds[key];
 
                 if (kind.shownInList) {
                     var value = properties[key];
-                    
+
                     if (kind.listTranslator) {
                         value = kind.listTranslator(value);
                     }
-                    
+
                     item.find('.property.' + key).text(value || '');
                 }
-                
+
                 if (knownPropertyValues[key] && properties[key]) {
                     knownPropertyValues[key].add(properties[key]);
                 }
+            }
+
+            ui.updateItemGroup(id, item, properties);
+        },
+
+        updateItemGroup: function (id, fileRow, properties) {
+            var group = ui.getGroup(properties),
+                contextFileRow = ui.getFileRow(id, group);
+
+            if (!contextFileRow.length) {
+                group.append(fileRow);
             }
         }
     });
