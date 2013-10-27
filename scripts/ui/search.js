@@ -20,6 +20,13 @@
     var search = function () {
         searchBy('month');
         searchBy('supplier');
+
+        $('.content .file-list .by-month:visible, .content .file-list .by-supplier:visible').each(function () {
+            var $this = $(this);
+            if (!$this.find('.file-row:visible').length) {
+                $this.hide();
+            }
+        });
     };
 
     searchControls.on('change keypress autocompletefocus autocompleteresponse autocompleteselect autocompleteclose', search);
