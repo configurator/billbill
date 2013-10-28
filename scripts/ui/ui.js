@@ -42,17 +42,6 @@
         currentlyShownDialog.remove();
     };
 
-    showUnclosableDialog(
-        'Authorizing',
-        [
-            'You must authorize this app to use Google Drive. A popup will open to allow this authorization.',
-            'Click here to retry authorization.'
-        ],
-        function () {
-            drive.auth.authorize(true);
-        }
-    );
-
     var drivePicker = memoize(function () {
         var getView = function (id) {
             var result = new google.picker.DocsView(id);
@@ -91,6 +80,10 @@
     $('.content .actions .refresh').click(function () {
         drive.listFiles();
     });
+    $('.content .actions .show-report-selector').click(function () {
+        ui.reports.showSelector();
+    });
+    
     $('.content .file-list').on('click', 'li', function () {
         var item = $(this).data('item');
         if (!item || !item.id) {
@@ -105,6 +98,19 @@
 
         finishedLoading: function () {
             $('body').removeClass('loading');
+        },
+        
+        googleDriveAuthorizationAttempted: function () {
+            showUnclosableDialog(
+                'Authorizing',
+                [
+                    'You must authorize this app to use Google Drive. A popup will open to allow this authorization.',
+                    'Click here to retry authorization.'
+                ],
+                function () {
+                    drive.auth.authorize(true);
+                }
+            );
         },
 
         googleDriveAuthorizationSuccess: function () {

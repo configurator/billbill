@@ -340,7 +340,5 @@
     singleItem.find('.actions .previous-file').click(ui.item.advanceFile(-1));
     singleItem.find('.actions .next-file').click(ui.item.advanceFile(1));
     
-    singleItem.modal({
-        show: false
-    });
+    singleItem.modal({ show: false });
 })();

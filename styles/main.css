@@ -92,15 +92,6 @@ body {
     border: 1px solid black;
 }
 
-.item {
-/*    position: absolute;
-    top: 10px;
-    left: 10px;
-    bottom: 10px;
-    right: 10px;
-    border: 2px solid #885c99;
-*/    background: white;
-}
 .item .modal-dialog, .item .modal-content, .item .modal-body {
     width: 100%;
     height: 100%;
@@ -133,6 +124,11 @@ body {
 }
 .item .data .control {
     margin: 4px 0;
+}
+
+.reports .viewer .modal-dialog, .reports .viewer .modal-content, .reports .viewer .modal-body, .reports .viewer .report-selection, .reports .viewer .graph {
+    width: 100%;
+    height: 100%;
 }
 
 input[type=number] {

@@ -28,11 +28,14 @@
         <div class="content">
             <div class="actions">
                 <ul class="btn-group">
-                    <li class="pick-drive-file btn btn-default">
+                    <li class="pick-drive-file btn btn-primary">
                         הוסף קבצים
                     </li>
-                    <li class="refresh btn btn-default">
+                    <li class="refresh btn btn-primary">
                         רענן רשימה
+                    </li>
+                    <li class="show-report-selector btn btn-primary">
+                        דוחות
                     </li>
                 </ul>
 
@@ -60,7 +63,7 @@
             </div>
         </div>
 
-        <div class="modal item" style="display: none;">
+        <div class="modal fade item">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-body">
@@ -137,6 +140,84 @@
             </div>
         </div>
         
+        <div class="reports">
+            <div class="modal fade selector">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="title">
+                                דוחות
+                            </h4>
+                             <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <label class="supplier control input-group">
+                                <span class="name input-group-addon">
+                                    סינון דוח לפי ספק
+                                </span>
+                                <input type="text" class="value form-control autocomplete-supplier" />
+                            </label>
+                            <label class="itemType control input-group">
+                                <span class="name input-group-addon">
+                                    לפי סוג פריט
+                                </span>
+                                <select class="value form-control">
+                                    <option value=""></option>
+                                    <option value="tax receipt">חשבונית</option>
+                                    <option value="summary receipt">חשבונית סיכום</option>
+                                    <option value="delivery confirmation">תעודת משלוח</option>
+                                    <option value="check">צ'ק</option>
+                                    <option value="receipt">קבלה</option>
+                                </select>
+                            </label>
+                            <label class="start-month control input-group">
+                                <span class="name input-group-addon">
+                                    החל מחודש
+                                </span>
+                                <select class="value form-control autocomplete-month">
+                                    <option value=""></option>
+                                </select>
+                            </label>
+                            <label class="end-month control input-group">
+                                <span class="name input-group-addon">
+                                    עד חודש
+                                </span>
+                                <select class="value form-control autocomplete-month">
+                                    <option value=""></option>
+                                </select>
+                            </label>
+                            <ul class="report-selection list-group">
+                                <li class="run-report list-group-item btn btn-primary" data-report="totalBySupplier">סך הוצאות לפי ספק</li>
+                                <li class="run-report list-group-item btn btn-primary" data-report="supplierMonthlyChange">שינויים חודשיים בהוצאות</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="modal fade viewer">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="title">
+                                דוחות
+                            </h4>
+                             <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="report-selection totalBySupplier">
+                                <div class="graph"></div>
+                            </div>
+                            
+                            <div class="report-selection supplierMonthlyChange">
+                                <div class="graph"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Load all our scripts -->
 
         <script src="scripts/memoize.js"></script>
@@ -144,15 +225,22 @@
         <script src="scripts/define.js"></script>
         <script src="scripts/set.js"></script>
         <script src="scripts/error-safe-execution.js"></script>
+        
+        <script src="scripts/drive/client_secrets.js"></script>
+        <script src="scripts/drive/auth.js"></script>
+        <script src="scripts/drive/drive.js"></script>
+        
         <script src="scripts/ui/ui.js"></script>
         <script src="scripts/ui/item.js"></script>
         <script src="scripts/ui/autocomplete.js"></script>
         <script src="scripts/ui/search.js"></script>
         <script src="scripts/ui/sort.js"></script>
-        <script src="scripts/drive/client_secrets.js"></script>
-        <script src="scripts/drive/auth.js"></script>
-        <script src="scripts/drive/drive.js"></script>
+        
+        <script src="scripts/reports/selector.js"></script>
+        <script src="scripts/reports/total-by-supplier.js"></script>
+        
         <script src="scripts/main.js"></script>
+        <script src="https://www.google.com/jsapi"></script>
         <script src="https://apis.google.com/js/client.js?onload=main_loaded"></script>
     </body>
 </html>

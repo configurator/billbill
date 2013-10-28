@@ -5,8 +5,7 @@
     var supplierAutocompleteOptions = {
         autoFocus: true,
         delay: 0,
-        source: ui.knownPropertyValues.supplier.values,
-        change: ui.item.inputFieldValueChanged
+        source: ui.knownPropertyValues.supplier.values
     };
     $('.autocomplete-supplier').autocomplete(supplierAutocompleteOptions);
 
