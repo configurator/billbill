@@ -52,6 +52,8 @@
                     $this.hide();
                 }
             });
+
+        ui.updateTotals();
     };
 
     searchControls.on('change keypress autocompletefocus autocompleteresponse autocompleteselect autocompleteclose', search);

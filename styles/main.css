@@ -79,6 +79,9 @@ body {
 .content > .actions .search {
     width: 200px;
 }
+.total-row {
+    margin-bottom: 5px;
+}
 .content > .file-list > li {
     margin-top: 5px;
 }

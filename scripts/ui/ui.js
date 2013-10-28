@@ -254,6 +254,7 @@
             }
 
             ui.updateItemGroup(id, item, properties);
+            ui.updateTotals();
         },
 
         updateItemGroup: function (id, fileRow, properties) {
@@ -264,6 +265,23 @@
                 group.append(fileRow);
                 ui.sort();
             }
+        },
+        
+        updateTotals: function () {
+            var sum = 0;
+            $('.file-row:visible').each(function () {
+                var props = $(this).data('props');
+                if (!props) {
+                    return;
+                }
+                
+                var value = parseFloat(props.totalAmount);
+                if (value) {
+                    sum += value;
+                }
+            });
+            
+            $('.total-row .totalAmount').text(sum.toFixed(2));
         }
     });
 })();
