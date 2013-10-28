@@ -221,7 +221,7 @@
                 }
             }
 
-            singleItem.show();
+            singleItem.modal('show');
             editing = true;
             singleItem.find(':focusable').not('.btn').first().focus();
 
@@ -258,7 +258,7 @@
 
         showList: function () {
             ui.item.viewer.hide();
-            singleItem.hide();
+            singleItem.modal('hide');
 
             editing = false;
         },
@@ -339,4 +339,8 @@
     singleItem.find('.actions .close-file').click(ui.item.showList);
     singleItem.find('.actions .previous-file').click(ui.item.advanceFile(-1));
     singleItem.find('.actions .next-file').click(ui.item.advanceFile(1));
+    
+    singleItem.modal({
+        show: false
+    });
 })();

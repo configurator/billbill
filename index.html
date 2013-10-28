@@ -36,11 +36,11 @@
                     </li>
                 </ul>
 
-                <input class="search by-supplier form-control" type="text" placeholder="סינון לפי ספק">
-                <select class="search by-date form-control">
+                <input class="search by-supplier form-control autocomplete-supplier" type="text" placeholder="סינון לפי ספק">
+                <select class="search by-date form-control autocomplete-month">
                     <option value="">סינון לפי חודש</option>
                 </select>
-                <select class="search by-itemType form-control" type="text" placeholder="סינון לפי סוג פריט">
+                <select class="search by-itemType form-control">
                     <option value="">סינון לפי סוג פריט</option>
                     <option value="tax receipt">חשבונית</option>
                     <option value="summary receipt">חשבונית סיכום</option>
@@ -60,74 +60,80 @@
             </div>
         </div>
 
-        <div class="item" style="display: none;">
-            <div class="viewUrl"></div>
-            <div class="data">
-                <div class="actions">
-                    <button class="previous-file btn">
-                        &lt;
-                    </button>
-                    <button class="close-file btn">
-                        בחזרה לרשימת הקבצים
-                    </button>
-                    <button class="next-file btn">
-                        &gt;
-                    </button>
+        <div class="modal item" style="display: none;">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="viewUrl"></div>
+                        <div class="data">
+                            <div class="actions">
+                                <button class="previous-file btn">
+                                    &lt;
+                                </button>
+                                <button class="close-file btn">
+                                    בחזרה לרשימת הקבצים
+                                </button>
+                                <button class="next-file btn">
+                                    &gt;
+                                </button>
+                            </div>
+                            <div class="title control input-group">
+                                <span class="name input-group-addon">
+                                    שם קובץ
+                                </span>
+                                <span class="value form-control"></span>
+                            </div>
+                            <label class="itemType control input-group">
+                                <span class="name input-group-addon">
+                                    סוג פריט
+                                </span>
+                                <select class="value form-control">
+                                    <option value=""></option>
+                                    <option value="tax receipt">חשבונית</option>
+                                    <option value="summary receipt">חשבונית סיכום</option>
+                                    <option value="delivery confirmation">תעודת משלוח</option>
+                                    <option value="check">צ'ק</option>
+                                    <option value="receipt">קבלה</option>
+                                </select>
+                            </label>
+                            <label class="identifier control input-group">
+                                <span class="name input-group-addon">
+                                    מס' פריט
+                                </span>
+                                <input type="text" class="value form-control" />
+                            </label>
+                            <script>
+                                // Bind the identifier's name label to the item type's value
+                                (function () {
+                                    var kindSelect = $('.item .itemType.control select.value'),
+                                        identifierName = $('.item .identifier.control span.name');
+            
+                                    kindSelect.change(function () {
+                                        identifierName.text("מס' " + (kindSelect.find(':selected').text() || 'פריט'));
+                                    });
+                                })();
+                            </script>
+                            <label class="supplier control input-group">
+                                <span class="name input-group-addon">
+                                    ספק
+                                </span>
+                                <input type="text" class="value form-control autocomplete-supplier" />
+                            </label>
+                            <label class="date control input-group">
+                                <span class="name input-group-addon">
+                                    תאריך
+                                </span>
+                                <input type="text" class="value form-control" />
+                            </label>
+                            <label class="totalAmount control input-group">
+                                <span class="name input-group-addon">
+                                    סה"כ כולל מע"מ
+                                </span>
+                                <input type="number" class="value form-control" />
+                            </label>
+                        </div>
+                    </div>
                 </div>
-                <div class="title control input-group">
-                    <span class="name input-group-addon">
-                        שם קובץ
-                    </span>
-                    <span class="value form-control"></span>
-                </div>
-                <label class="itemType control input-group">
-                    <span class="name input-group-addon">
-                        סוג פריט
-                    </span>
-                    <select class="value form-control">
-                        <option value=""></option>
-                        <option value="tax receipt">חשבונית</option>
-                        <option value="summary receipt">חשבונית סיכום</option>
-                        <option value="delivery confirmation">תעודת משלוח</option>
-                        <option value="check">צ'ק</option>
-                        <option value="receipt">קבלה</option>
-                    </select>
-                </label>
-                <label class="identifier control input-group">
-                    <span class="name input-group-addon">
-                        מס' פריט
-                    </span>
-                    <input type="text" class="value form-control" />
-                </label>
-                <script>
-                    // Bind the identifier's name label to the item type's value
-                    (function () {
-                        var kindSelect = $('.item .itemType.control select.value'),
-                            identifierName = $('.item .identifier.control span.name');
-
-                        kindSelect.change(function () {
-                            identifierName.text("מס' " + (kindSelect.find(':selected').text() || 'פריט'));
-                        });
-                    })();
-                </script>
-                <label class="supplier control input-group">
-                    <span class="name input-group-addon">
-                        ספק
-                    </span>
-                    <input type="text" class="value form-control" />
-                </label>
-                <label class="date control input-group">
-                    <span class="name input-group-addon">
-                        תאריך
-                    </span>
-                    <input type="text" class="value form-control" />
-                </label>
-                <label class="totalAmount control input-group">
-                    <span class="name input-group-addon">
-                        סה"כ כולל מע"מ
-                    </span>
-                    <input type="number" class="value form-control" />
-                </label>
             </div>
         </div>
         
