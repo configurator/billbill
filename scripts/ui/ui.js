@@ -159,6 +159,7 @@
 
                 item.append(
                     child = $('<div>')
+                    .addClass('file-list-sublist')
                     .addClass('list-group-item')
                     .addClass('by-' + property)
                     .data(property, value)
@@ -178,7 +179,7 @@
             };
 
             var list = $('.content .file-list'),
-                monthChild = getOrCreateChild(list, 'month', month, month, 'list-group'),
+                monthChild = getOrCreateChild(list, 'date', month, month, 'list-group'),
                 supplierChild = getOrCreateChild(monthChild, 'supplier', supplier),
                 ul = supplierChild.children('ul');
 

@@ -69,7 +69,7 @@
             }
             sortRequired = false;
 
-            $('.file-list .by-month').sort('month', monthComparer, true);
+            $('.file-list .by-date').sort('date', monthComparer, true);
             $('.file-list .by-supplier').sort('supplier');
         }, 100);
     });
