@@ -4,27 +4,26 @@
         <title>Billbill</title>
         <meta charset="utf-8">
 
+        <!-- Loading.css is the only thing in the head - we want the body's loading class to take effect before anything else is loaded. -->
         <link rel="stylesheet" href="styles/loading.css" />
     </head>
     <body class="loading">
+        <!-- Load our css -->
         <link rel="stylesheet" href="styles/main.css" />
+
+        <!-- External libraries -->
+        <script src="lib/jquery/jquery.min.js"></script>
+
+        <script src="lib/jquery/jquery-ui.min.js"></script>
         <link rel="stylesheet" href="lib/jquery/jquery-ui.min.css" />
+
+        <script src="lib/bootstrap/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="lib/bootstrap/css/bootstrap-rtl.css" />
         <link rel="stylesheet" href="lib/bootstrap/css/bootstrap-theme.min.css" />
 
-        <script src="lib/jquery/jquery.min.js"></script>
-        <script src="lib/jquery/jquery-ui.min.js"></script>
-        <script src="lib/bootstrap/js/bootstrap.min.js"></script>
         <script src="lib/date/date.js"></script>
 
-        <!--<div id="log" class="log-hidden">-->
-        <!--    <div class="log">-->
-
-        <!--    </div>-->
-        <!--    <span class="show-hide-log">-->
-        <!--        <span class="glyphicon glyphicon-resize-vertical"></span>-->
-        <!--    </span>-->
-        <!--</div>-->
+        <!-- Actual page content -->
 
         <div class="content">
             <div class="actions">
@@ -117,6 +116,8 @@
                 </label>
             </div>
         </div>
+        
+        <!-- Load all our scripts -->
 
         <script src="scripts/memoize.js"></script>
         <!--<script src="scripts/console.js"></script>-->
