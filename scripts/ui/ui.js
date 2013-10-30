@@ -274,7 +274,7 @@
         },
         
         updateTotals: function () {
-            var sum = 0;
+            var sums = {};
             $('.file-row:visible').each(function () {
                 var props = $(this).data('props');
                 if (!props) {
@@ -283,11 +283,16 @@
                 
                 var value = parseFloat(props.totalAmount);
                 if (value) {
-                    sum += value;
+                    var itemType = props.itemType || 'other';
+                    sums[itemType] = (sums[itemType] || 0) + value;
                 }
             });
             
-            $('.total-row .totalAmount').text(sum.toFixed(2));
+            $('.total-row .value').text('0');
+            
+            for (var itemType in sums) {
+                $('.total-row .' + itemType + ' .value').text(sums[itemType].toFixed(2));
+            }
         }
     });
 })();
