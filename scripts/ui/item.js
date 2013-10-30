@@ -12,7 +12,9 @@
 
         preloadArea = $('<div>').hide(),
         preloadedViewers = {},
-        maxPreloadedViewers = 10;
+        maxPreloadedViewers = 10,
+        
+        currentMode = null;
 
     $('body').append(preloadArea);
 
@@ -184,6 +186,11 @@
                 });
             }
         },
+        
+        startDataEntry: function () {
+            currentMode = 'data-entry';
+            ui.item.advanceFile(1)();
+        },
 
         showItem: function (id) {
             editing = false;
@@ -283,16 +290,63 @@
         },
 
         getNextFile: function (addition) {
-            var list = $('.content .file-list').find('li.file-row'),
-                currentItem = list.filter(':data(' + currentlyShownItem + ')'),
-                index = list.index(currentItem),
-                selection = list.eq(index + addition),
-                item = selection.data('item');
-
-            if (index + addition >= 0 && item && item.id) {
-                return item;
-            } else {
+            var getNextFileWithCondition = function (options) {
+                options = options || {};
+                
+                var condition = options.condition || function () { return true; },
+                    overflow = options.overflow;
+                    
+                var list = $('.content .file-list').find('li.file-row'),
+                    currentItem = list.filter(':data(' + currentlyShownItem + ')'),
+                    index = list.index(currentItem);
+                    
+                for (var i = 1; i <= list.length; i++) {
+                    var selectedIndex = index + (addition * i);
+                    if (selectedIndex < 0) {
+                        if (!overflow) {
+                            return false;
+                        }
+                        
+                        selectedIndex += list.length;
+                    } else if (selectedIndex > list.length) {
+                        if (!overflow) {
+                            return false;
+                        }
+                        
+                        selectedIndex -= list.length;
+                    }
+                    
+                    var selection = list.eq(selectedIndex),
+                        item = selection.data('item'),
+                        props = selection.data('props');
+                    
+                    if (item && item.id && condition(props, item)) {
+                        return selection.data('item');
+                    }
+                }
                 return false;
+            };
+                
+            switch (currentMode) {
+                case 'data-entry':
+                    return getNextFileWithCondition({
+                        overflow: true,
+                        condition: function (props) {
+                            // First we find those with no data at all
+                            return !props ||
+                                (!props.supplier && !props.totalAmount && !props.itemType);
+                        }
+                    }) || getNextFileWithCondition({
+                        overflow: true,
+                        condition: function (props) {
+                            // Next we try to find any item with any missing data.
+                            return !props ||
+                                (!props.supplier || !props.totalAmount || !props.itemType);
+                        }
+                    });
+                    
+                default:
+                    return getNextFileWithCondition();
             }
         },
 
@@ -341,4 +395,8 @@
     singleItem.find('.actions .next-file').click(ui.item.advanceFile(1));
     
     singleItem.modal({ show: false });
+    singleItem.on('hidden.bs.modal', function () {
+        currentMode = null;
+        currentlyShownItem = null;
+    });
 })();

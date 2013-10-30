@@ -80,6 +80,9 @@
     $('.content .actions .refresh').click(function () {
         drive.listFiles();
     });
+    $('.content .actions .data-entry-mode').click(function () {
+        ui.item.startDataEntry();
+    })
     $('.content .actions .show-report-selector').click(function () {
         ui.reports.showSelector();
     });
