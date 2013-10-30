@@ -72,9 +72,11 @@ body {
 .content > .actions {
     display: block;
 }
-.content > .actions > * {
-    display: inline-block;
+.content > .actions > div {
     margin: 2px 0 7px 0;
+}
+.content > .actions > div > * {
+    display: inline-block;
 }
 .content > .actions .search {
     width: 200px;
