@@ -3,7 +3,7 @@
 
 (function () {
     define('ui.reports.totalBySupplier', function (items, showGraph) {
-        // Caclulate the values
+        // Calculate the values
         var data = {};
         for (var i in items) {
             var item = items[i];

@@ -14,6 +14,10 @@
         }
     };
     
+    Set.prototype.sort = function () {
+        this.values.sort();
+    };
+    
     Set.prototype.add = function (value) {
         if (this.normalize) {
             value = this.normalize(value);
@@ -21,7 +25,7 @@
         
         if (!this.has(value)) {
             this.values.push(value);
-            this.values.sort();
+            this.sort();
         }
     };
     
@@ -60,8 +64,38 @@
         return date ? date.toString('MM/yyyy') : '-';
     };
     
+    MonthSet.monthComparer = function (a, b) {
+        a = a || '-';
+        b = b || '-';
+
+        if (a == b) {
+            return 0;
+        }
+
+        if (a == '-') {
+            return -1;
+        } else if (b == '-') {
+            return 1;
+        }
+
+        var ya = parseInt(a.substring(3), 10),
+            yb = parseInt(b.substring(3), 10),
+            ma = parseInt(a.substring(0, 2), 10),
+            mb = parseInt(b.substring(0, 2), 10);
+
+        if (ya != yb) {
+            return ya - yb;
+        } else {
+            return ma - mb;
+        }
+    };
+    
+    MonthSet.prototype.sort = function () {
+        this.values.sort(MonthSet.monthComparer);
+    };
     
     define('Set', function (args) { return new Set(args); });
     define('Set.MonthSet', function (args) { return new MonthSet(args); });
     define('Set.MonthSet.normalize', MonthSet.prototype.normalize);
+    define('Set.MonthSet.monthComparer', MonthSet.monthComparer)
 })();

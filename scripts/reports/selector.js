@@ -14,7 +14,12 @@
     
     define('ui.reports.clearChart', function () {
         if (lastShownChart) {
-            lastShownChart.clearChart();
+            try {
+                // This can fail if showing the chart failed.
+                lastShownChart.clearChart();
+            } catch (e) {
+                console.error(e);
+            }
             lastShownChart = null;
         }
     })
@@ -139,7 +144,10 @@
         var showGraph = function (chartType, dataArray, options) {
             ui.reports.clearChart();
             
-            var data = google.visualization.arrayToDataTable(dataArray),
+            console.log('Drawing a ' + chartType + ' ', dataArray, options);
+
+            var ourOptions = options.billbill || {},
+                data = google.visualization.arrayToDataTable(dataArray),
                 chart = new google.visualization[chartType](graph[0]);
             
             lastShownChart = chart;
@@ -148,9 +156,24 @@
                 options.width = graph.width();
                 options.height = viewer.find('.modal-body').height() - viewer.find('.modal-header').outerHeight();
             
-                console.log('Drawing a ' + chartType + ' ', dataArray, options);
                 chart.draw(data, options || {});
             });
+            
+            if (ourOptions.onclose) {
+                viewer.one('hidden.bs.modal', options.onclose);
+            }
+            
+            var formatter = ourOptions.formatter || new google.visualization.NumberFormat({
+                decimalSymbol: '.',
+                groupingSymbol: ',',
+                
+                fractionDigits: 0,
+                
+                suffix: ' ₪'
+            });
+            for (var i = 1; i < data.getNumberOfColumns(); i++) {
+                formatter.format(data, i);
+            }
                 
             selector.modal('hide');
             viewer.modal('show');
