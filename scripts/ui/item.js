@@ -386,7 +386,7 @@
                 break;
         }
 
-        control.change(ui.item.inputFieldValueChanged);
+        control.on('change autocompletechange', ui.item.inputFieldValueChanged);
         control.keypress(ui.item.inputControlKeyPress);
     }
 
