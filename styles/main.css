@@ -133,6 +133,17 @@ body {
     height: 100%;
 }
 
+.drive-errors {
+    display: none;
+    direction: ltr;
+    position: fixed;
+    z-index: 2000;
+    top: 10px;
+    left: 50%;
+    width: 600px;
+    margin-left: -300px;
+}
+
 input[type=number] {
     direction: ltr;
     text-align: right;

@@ -48,6 +48,7 @@
             result.setIncludeFolders(true);
             result.setMode(google.picker.DocsViewMode.LIST);
             result.setParent('root');
+            result.setSelectFolderEnabled(true);
             return result;
         };
 
@@ -95,9 +96,87 @@
 
         ui.item.showItem(item.id);
     });
+    
+    $('.drive-errors .retry-all').click(function () {
+        $('.drive-errors .drive-error .error-retry').each(function () {
+            $(this).click();
+        });
+    });
+    $('.drive-errors .cancel-all').click(function () {
+        $('.drive-errors .drive-error .error-cancel').each(function () {
+            $(this).click();
+        });
+    });
 
     define('ui', {
         knownPropertyValues: knownPropertyValues,
+        
+        hideDriveError: function (div) {
+            var container = $('.drive-errors');
+            div.remove();
+            if (!container.find('.drive-error').length) {
+                container.hide();
+            }
+        },
+        
+        showDriveError: function (error, failureCount, retry, cancel) {
+            console.error('Error connecting to Google Drive ', error);
+            error = error || {};
+            failureCount = failureCount || 1
+            
+            var div = $('<div>')
+                .addClass('drive-error')
+                .addClass('list-group-item')
+                .append(
+                    $('<h4>')
+                    .addClass('error-text')
+                    .addClass('list-group-item-heading')
+                    .text('An error occured connecting to Google Drive. Some of your changes may not be saved unless you try again. ')
+                    .append(
+                        $('<span>')
+                        .addClass('failure-count')
+                        .addClass('badge')
+                        .text(failureCount > 1 ? 'Failed ' + failureCount + ' times' : 'Failed once')
+                    )
+                )
+                .append(
+                    $('<pre>')
+                    .addClass('error-details')
+                    .addClass('list-group-item-text')
+                    .text(
+                        'Error: ' + error.message || 'Unknown'
+                        + '\nCode: ' + error.code || 'Unknown'
+                    )
+                )
+                .append(
+                    $('<div>')
+                    .addClass('error-actions')
+                    .addClass('btn-toolbar')
+                    .append(
+                        $('<span>')
+                        .addClass('error-retry')
+                        .addClass('btn btn-primary')
+                        .text('Try again!')
+                        .click(function () {
+                            ui.hideDriveError(div);
+                            retry.apply(this, arguments);
+                        })
+                    )
+                    .append(
+                        $('<span>')
+                        .addClass('error-cancel')
+                        .addClass('btn btn-danger')
+                        .text('Forget it')
+                        .click(function () {
+                            ui.hideDriveError(div);
+                            cancel.apply(this, arguments);
+                        })
+                    )
+                );
+
+            $('.drive-errors .error-list').append(div);
+            $('.drive-errors').show();
+        },
 
         finishedLoading: function () {
             $('body').removeClass('loading');

@@ -4,17 +4,74 @@
 (function () {
     var parentFolderNameForAllBillbillFiles = '__Billbill__',
         parentFolderMarkerProperty = '__Billbill__ParentFolder',
+        googleDriveFolderMimeType = 'application/vnd.google-apps.folder',
         parentFolders = {},
         parentFolderListFields = 'items(id)',
         fileGetFields = 'id, mimeType, title',
-        fileListFields = 'items(' + fileGetFields + '), nextPageToken',
+        fileListFields = undefined,//'items(' + fileGetFields + '), nextPageToken',
         knownFiles = {},
         properties = {};
+
+
+    var listFilesInFolders = function (folders, gotFile, finished) {
+        console.log('Listing files in ', folders);
+        var query = '';
+        for (var folder in folders) {
+            if (query.length) {
+                query = query + ' or ';
+            }
+            query = query + '\'' + folder + '\' in parents';
+        }
+        
+        if (query == '') {
+            return;
+        }
+        
+        query = '(' + query + ') and trashed = false';
+        
+        console.log('Query ', { q: query, fields: fileListFields });
+        
+        var getResults = function (request) {
+            request.safeExecute(function (results) {
+                if (!results || results.error) {
+                    console.error('Error getting file list.', results);
+                    return;
+                }
+                
+                console.info('Listing results:', results);
+                
+                for (var i in results.items) {
+                    var item = results.items[i];
+                    gotFile(results.items[i]);
+                }
+                
+                var nextPageToken = results.nextPageToken;
+                if (nextPageToken) {
+                    request = gapi.client.drive.files.list({
+                        q: query,
+                        pageToken: nextPageToken,
+                        fields: fileListFields
+                    });
+                    getResults(request);
+                } else {
+                    console.log('Finished listing all files');
+                    finished();
+                }
+            });
+        };
+        
+        getResults(gapi.client.drive.files.list({
+            q: query,
+            fields: fileListFields
+        }));
+    };
     
     define('drive', {
         knownFiles: knownFiles,
         properties: properties,
         parentFolders: parentFolders,
+        
+        listFilesInFolders: listFilesInFolders,
         
         findParentFolder: function () {
             console.log('Searching for parent folder of all documents.');
@@ -66,7 +123,7 @@
                     title: parentFolderNameForAllBillbillFiles,
                     labels: { hidden: true },
                     description: 'This folder is used by Billbill internally.',
-                    mimeType: 'application/vnd.google-apps.folder'
+                    mimeType: googleDriveFolderMimeType
                 }
             }).safeExecute(function (results) {
                 if (!results || results.error) {
@@ -95,58 +152,13 @@
         },
         
         listFiles: function () {
-            console.log('Listing files.');
-            var query = '';
-            for (var folder in parentFolders) {
-                if (query.length) {
-                    query = query + ' or ';
-                }
-                query = query + '\'' + folder + '\' in parents';
-            }
-            
-            if (query == '') {
-                return;
-            }
-            
-            query = '(' + query + ') and trashed = false';
-            
-            console.log('Query ', { q: query, fields: fileListFields });
-            
-            var getResults = function (request) {
-                request.safeExecute(function (results) {
-                    if (!results || results.error) {
-                        console.error('Error getting file list.', results);
-                        return;
-                    }
-                    
-                    console.info('Listing results:', results);
-                    
-                    for (var i in results.items) {
-                        var item = results.items[i];
-                        drive.normalizeAndSaveFile(item);
-                        drive.loadProperties(item.id);
-                    }
-                    
-                    var nextPageToken = results.nextPageToken;
-                    if (nextPageToken) {
-                        request = gapi.client.drive.files.list({
-                            q: query,
-                            pageToken: nextPageToken,
-                            fields: fileListFields
-                        });
-                        getResults(request);
-                    } else {
-                        console.log('Finished listing all files');
-                        main.filesListed();
-                    }
-                });
-            };
-            
-            getResults(gapi.client.drive.files.list({
-                q: query,
-                fields: fileListFields
-            }));
-        },
+            listFilesInFolders(parentFolders, function (item) {
+                drive.normalizeAndSaveFile(item);
+                drive.loadProperties(item.id);
+            }, function () {
+                main.filesListed();
+            });
+         },
         
         loadProperties: function (id) {
             gapi.client.drive.properties.list({
@@ -196,18 +208,103 @@
             ui.updateKnownFile(data);
         },
         
-        addFiles: function (ids) {
-            var parentFolderId = Object.keys(parentFolders)[0];
-            for (var x in ids) {
-                var id = ids[x];
-                gapi.client.drive.parents.insert({
-                    fileId: id,
-                    resource: { id: parentFolderId }
-                }).safeExecute(function () {
-                    console.log('Added file to list.');
-                    drive.listFiles();
-                });
+        enumerateFilesFromGivenFoldersRecursively: function (ids, callback) {
+            var skipFiles = {},
+                resultFiles = [],
+                foldersToEnumerate = {},
+                inProgress = 0;
+            
+            for (var id in knownFiles) {
+                skipFiles[id] = true;
             }
+
+            var enumerateFile = function (id) {
+                console.log('Looking at file ' + id);
+                if (skipFiles[id]) {
+                    console.log('Skipped - we already know this file!');
+                    return;
+                }
+                skipFiles[id] = true;
+                
+                inProgress++;
+                gapi.client.drive.files.get({
+                    fileId: id,
+                    fields: fileGetFields
+                }).safeExecute(function (result) {
+                    console.log('result ', result);
+                    inProgress--;
+                    
+                    if (!result || result.error) {
+                        console.error('Failed to enumerate file ' + id + '; ignoring this file.');
+                        return;
+                    }
+                    
+                    if (result.mimeType == googleDriveFolderMimeType) {
+                        foldersToEnumerate[id] = true;
+                    } else {
+                        resultFiles.push(id);
+                    }
+                    
+                    finishedEnumeration();
+                });
+            };
+            
+            var enumerateChildren = function () {
+                var folders = foldersToEnumerate;
+                foldersToEnumerate = {};
+                
+                console.log('Enumerating files in folders ', folders);
+                
+                inProgress++;
+                listFilesInFolders(folders, function (item) {
+                    enumerateFile(item.id);
+                }, function () {
+                    inProgress--;
+                    finishedEnumeration();
+                });
+            };
+            
+            var finishedEnumeration = function () {
+                if (inProgress != 0) {
+                    return;
+                }
+                
+                if (Object.keys(foldersToEnumerate).length) {
+                    enumerateChildren();
+                    return;
+                }
+                
+                callback(resultFiles);
+                
+                // Make sure we're not called again
+                callback = function () {
+                    console.error('Callback was almost called twice!');
+                }
+            };
+            
+            inProgress++;
+            for (var index in ids) {
+                enumerateFile(ids[index]);
+            }
+            inProgress--;
+            finishedEnumeration();
+        },
+        
+        addFiles: function (ids) {
+            console.log('Adding files ', ids);
+            var parentFolderId = Object.keys(parentFolders)[0];
+            drive.enumerateFilesFromGivenFoldersRecursively(ids, function (ids) {
+                for (var x in ids) {
+                    var id = ids[x];
+                    gapi.client.drive.parents.insert({
+                        fileId: id,
+                        resource: { id: parentFolderId }
+                    }).safeExecute(function () {
+                        console.log('Added file to list.');
+                        drive.listFiles();
+                    });
+                }
+            });
         },
         
         setProperty: function (file, key, value) {
