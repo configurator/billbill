@@ -99,7 +99,7 @@
                         gapi.client.drive.properties.get({
                             fileId: id,
                             propertyKey: parentFolderMarkerProperty
-                        }).safeExecute(function (results) {
+                        }).safeBatch(function (results) {
                             if (results && !results.error) {
                                 parentFolders[id] = {};
                             }
@@ -163,7 +163,7 @@
         loadProperties: function (id) {
             gapi.client.drive.properties.list({
                 fileId: id
-            }).safeExecute(function (result) {
+            }).safeBatch(function (result) {
                 if (!result || result.error) {
                     console.error('Error loading properties for file ' + id, result);
                     return;
@@ -185,7 +185,7 @@
             gapi.client.drive.files.get({
                 fileId: id,
                 fields: fileGetFields
-            }).safeExecute(function (result) {
+            }).safeBatch(function (result) {
                 if (!result || result.error) {
                     console.error('Error loading file ' + id, result);
                     return;
@@ -230,7 +230,7 @@
                 gapi.client.drive.files.get({
                     fileId: id,
                     fields: fileGetFields
-                }).safeExecute(function (result) {
+                }).safeBatch(function (result) {
                     console.log('result ', result);
                     inProgress--;
                     
@@ -299,7 +299,7 @@
                     gapi.client.drive.parents.insert({
                         fileId: id,
                         resource: { id: parentFolderId }
-                    }).safeExecute(function () {
+                    }).safeBatch(function () {
                         console.log('Added file to list.');
                         drive.listFiles();
                     });
@@ -316,7 +316,7 @@
                     value: value,
                     visibility: 'PRIVATE'
                 }
-            }).safeExecute(function (results) {
+            }).safeBatch(function (results) {
                 if (!results || results.error) {
                     console.error('Error setting property on file', results);
                 } else {
