@@ -305,6 +305,7 @@
             console.log('Adding files ', ids);
             var parentFolderId = Object.keys(parentFolders)[0];
             drive.enumerateFilesFromGivenFoldersRecursively(ids, function (ids) {
+                var awaiting = ids.length;
                 for (var x in ids) {
                     var id = ids[x];
                     gapi.client.drive.parents.insert({
@@ -312,7 +313,10 @@
                         resource: { id: parentFolderId }
                     }).safeBatch(function () {
                         console.log('Added file to list.');
-                        drive.listFiles();
+                        awaiting--;
+                        if (!awaiting) {
+                            drive.listFiles();
+                        }
                     });
                 }
             });
