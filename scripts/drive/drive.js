@@ -164,15 +164,15 @@
             gapi.client.drive.properties.list({
                 fileId: id
             }).safeBatch(function (result) {
-                if (!result || result.error) {
+                if (!result || result.error || !result.result || result.result.error) {
                     console.error('Error loading properties for file ' + id, result);
                     return;
                 }
                 
                 var props = {};
                 
-                for (var key in result.items) {
-                    var item = result.items[key];
+                for (var key in result.result.items) {
+                    var item = result.result.items[key];
                     props[item.key] = item.value;
                 }
                 
@@ -192,7 +192,6 @@
                 }
 
                 drive.normalizeAndSaveFile(result);
-                ui.updateKnownFile(result);
             });
             
             drive.loadProperties(id);
@@ -200,6 +199,11 @@
         
         normalizeAndSaveFile: function (data) {
             if (!data || !data.id) {
+                return;
+            }
+            
+            if (data.mimeType == googleDriveFolderMimeType) {
+                // We never display folders
                 return;
             }
             

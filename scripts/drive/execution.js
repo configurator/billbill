@@ -32,6 +32,8 @@
             };
             
             var exec = function (callback) {
+                var request = this;
+                
                 this[f](function (result) {
                     // Normal execution path
                     if (result && !result.error) {
