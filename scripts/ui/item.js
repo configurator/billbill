@@ -38,15 +38,22 @@
         },
         date: {
             normalize: function (text) {
-                var value = Date.parseExact(text, [
-                    'd/M/yy',
-                    'd M yy',
-                    'd/M',
-                    'd M',
-                    'ddMM',
-                    'ddMMyy',
-                    'ddMMyyyy'
-                ]);
+                var now = new Date(),
+                    value = Date.parseExact(text, [
+                        'd/M/yy',
+                        'd M yy',
+                        'd/M',
+                        'd M',
+                        'ddMM',
+                        'ddMMyy',
+                        'ddMMyyyy'
+                    ]);
+                
+                if (text.length < 6 && value.getYear() == now.getYear() && value.getMonth() > now.getMonth()) {
+                    // text.length < 6 means we probably didn't provide a year in the date field
+                    // the rest of the test means this is a file from a future months
+                    value.addYears(-1);
+                }
 
                 if (value) {
                     return value.toString('dd/MM/yyyy');
