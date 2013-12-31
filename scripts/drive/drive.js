@@ -51,7 +51,8 @@
                     request = gapi.client.drive.files.list({
                         q: query,
                         pageToken: nextPageToken,
-                        fields: fileListFields
+                        fields: fileListFields,
+                        maxResults: 1000
                     });
                     getResults(request);
                 } else {
@@ -63,7 +64,8 @@
         
         getResults(gapi.client.drive.files.list({
             q: query,
-            fields: fileListFields
+            fields: fileListFields,
+            maxResults: 1000
         }));
     };
     
