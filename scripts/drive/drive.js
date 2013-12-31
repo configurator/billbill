@@ -10,8 +10,9 @@
         fileGetFields = 'id, mimeType, title',
         fileListFields = undefined,//'items(' + fileGetFields + '), nextPageToken',
         knownFiles = {},
-        properties = {};
-
+        properties = {},
+        
+        stripMillisecondsRegExp = /^(.*)\.\d\d\dZ$/;
 
     var listFilesInFolders = function (folders, gotFile, finished) {
         console.log('Listing files in ', folders);
@@ -205,6 +206,12 @@
             if (data.mimeType == googleDriveFolderMimeType) {
                 // We never display folders
                 return;
+            }
+            
+            var timestampWithoutMilliseconds = stripMillisecondsRegExp.exec(data.modifiedDate),
+                parsedTimestamp = timestampWithoutMilliseconds && Date.parseExact(timestampWithoutMilliseconds[1], 'yyyy-MM-ddTHH:mm:ss');
+            if (parsedTimestamp) {
+                data.timestamp = parsedTimestamp.getTime();
             }
             
             data.viewUrl = '//drive.google.com/uc?export=view&id=' + data.id;

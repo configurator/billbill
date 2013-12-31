@@ -14,7 +14,7 @@
         preloadedViewers = {},
         maxPreloadedViewers = 10,
         
-        currentMode = null;
+        editFilesList = null;
 
     $('body').append(preloadArea);
 
@@ -188,8 +188,67 @@
         },
         
         startDataEntry: function () {
-            currentMode = 'data-entry';
-            ui.item.advanceFile(1)();
+            editFilesList = [];
+            var list = $('.content .file-list').find('li.file-row');
+            list.each(function () {
+                var element = $(this),
+                    item = element.data('item'),
+                    props = element.data('props') || {},
+                    
+                    priority = (props.supplier ? 0 : 4)
+                             + (props.itemType ? 0 : 2)
+                             + (props.totalAmount ? 0 : 1);
+
+                if (item && item.id && priority) {
+                    // priority 0 doesn't get shown at all.
+                    editFilesList.push({
+                        element: element,
+                        item: item,
+                        props: props,
+                        priority: priority,
+                        timestamp: item.timestamp
+                    });
+                }
+            });
+            
+            // Sort by priority descending, then by timestamp descending.
+            editFilesList.sort(function (a, b) {
+                if (a.priority < b.priority) {
+                    return 1;
+                }
+                if (a.priority > b.priority) {
+                    return -1;
+                }
+                
+                if (a.timestamp < b.timestamp) {
+                    return 1;
+                }
+                if (a.timestamp > b.timestamp) {
+                    return -1;
+                }
+                
+                return 0;
+            });
+            
+            // Reverse lookup
+            editFilesList.indexes = {};
+            for (var i = 0; i < editFilesList.length; i++) {
+                editFilesList.indexes[editFilesList[i].item.id] = i;
+            }
+            
+            // jQuery object
+            editFilesList.jQuery = $();
+            for (var i = 0; i < editFilesList.length; i++) {
+                editFilesList.jQuery = editFilesList.jQuery.add(editFilesList[i].element);
+            }
+            
+            console.log('editFilesList: ', window.editFilesList = editFilesList);
+            
+            if (editFilesList.length) {
+                ui.item.showItem(editFilesList[0].item.id);
+            } else {
+                alert('No files to edit');
+            }
         },
 
         showItem: function (id) {
@@ -290,64 +349,21 @@
         },
 
         getNextFile: function (addition) {
-            var getNextFileWithCondition = function (options) {
-                options = options || {};
+            var list = editFilesList ? editFilesList.jQuery : $('.content .file-list').find('li.file-row'),
+                currentItem = list.filter(':data(' + currentlyShownItem + ')'),
+                index = list.index(currentItem),
+                selectedIndex = index + addition;
                 
-                var condition = options.condition || function () { return true; },
-                    overflow = options.overflow;
-                    
-                var list = $('.content .file-list').find('li.file-row'),
-                    currentItem = list.filter(':data(' + currentlyShownItem + ')'),
-                    index = list.index(currentItem);
-                    
-                for (var i = 1; i <= list.length; i++) {
-                    var selectedIndex = index + (addition * i);
-                    if (selectedIndex < 0) {
-                        if (!overflow) {
-                            return false;
-                        }
-                        
-                        selectedIndex += list.length;
-                    } else if (selectedIndex > list.length) {
-                        if (!overflow) {
-                            return false;
-                        }
-                        
-                        selectedIndex -= list.length;
-                    }
-                    
-                    var selection = list.eq(selectedIndex),
-                        item = selection.data('item'),
-                        props = selection.data('props');
-                    
-                    if (item && item.id && condition(props, item)) {
-                        return selection.data('item');
-                    }
-                }
+            if (selectedIndex < 0) {
                 return false;
-            };
-                
-            switch (currentMode) {
-                case 'data-entry':
-                    return getNextFileWithCondition({
-                        overflow: true,
-                        condition: function (props) {
-                            // First we find those with no data at all
-                            return !props ||
-                                (!props.supplier && !props.totalAmount && !props.itemType);
-                        }
-                    }) || getNextFileWithCondition({
-                        overflow: true,
-                        condition: function (props) {
-                            // Next we try to find any item with any missing data.
-                            return !props ||
-                                (!props.supplier || !props.totalAmount || !props.itemType);
-                        }
-                    });
-                    
-                default:
-                    return getNextFileWithCondition();
+            } else if (selectedIndex > list.length) {
+                return false;
             }
+                
+            var selection = list.eq(selectedIndex),
+                item = selection.data('item');
+                
+            return item;
         },
 
         advanceFile: function (addition) {
@@ -396,7 +412,7 @@
     
     singleItem.modal({ show: false });
     singleItem.on('hidden.bs.modal', function () {
-        currentMode = null;
+        editFilesList = null;
         currentlyShownItem = null;
     });
 })();
